@@ -21,11 +21,15 @@
     transition : all 100ms linear;
 }
 
+.hrBtn.dark
+{
+    background-color: #909090;
+}
+
 .hrBtn.hrClick
 {
     cursor: pointer;
 }
-
 .hrBtn.hrClick:hover
 {
     border-color: rgba(160, 160, 160, 1);

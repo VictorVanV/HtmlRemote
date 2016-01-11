@@ -49,7 +49,7 @@ var HostListOverlay = (function()
             if (this.filterEmpty && hostListData.hosts[a].numconns < 2) { continue; }
             
             entryDiv = document.createElement('div');
-            entryDiv.className = 'hrBtn hrClick';
+            entryDiv.className = 'hrBtn hrClick' + (hostListData.hosts[a].flags & 1 ? ' dark' : '');
             entryDiv.idx = a;
             
             licDiv = document.createElement('div');
