@@ -8,6 +8,8 @@ var StatusOverlay = (function()
         this.div = document.createElement('div');
         this.div.className = 'statusOvl';
         
+        this.messageOvl = new MessageOverlay(this.div);
+        
         this.container.appendChild(this.div);
     }
     

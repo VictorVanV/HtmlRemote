@@ -24,7 +24,7 @@ var HtmlRemote = (function()
         
         this.viewer = new Viewer(div);
         this.viewer.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
-        
+
         this.hostListData = null;
         this.curLfsHost = '';
     }
@@ -160,30 +160,30 @@ var HtmlRemote = (function()
             
             case IS.IRP_ERR:
                 console.log('ERR', pkt);
-//                switch(pkt.errno)
-//                {
-//                    case 1:
-//                        debugDiv.addLine("** Relay error : invalid packet");
-//                        break;
-//                    case 2:
-//                        debugDiv.addLine("** Relay error : non forwardable packet");
-//                        break;
-//                    case 3:
-//                        debugDiv.addLine("** Relay error : wrong hostname");
-//                        break;
-//                    case 4:
-//                        debugDiv.addLine("** Relay error : wrong admin pass");
-//                        break;
-//                    case 5:
-//                        debugDiv.addLine("** Relay error : wrong spectator pass");
-//                        break;
-//                    case 6:
-//                        debugDiv.addLine("** Relay error : no spectator pass provided");
-//                        break;
-//                    default:
-//                        debugDiv.addLine("** Relay error : unknown error");
-//                        break;
-//                }
+                switch(pkt.errno)
+                {
+                    case 1:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : invalid packet");
+                        break;
+                    case 2:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : non forwardable packet");
+                        break;
+                    case 3:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong hostname");
+                        break;
+                    case 4:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong admin pass");
+                        break;
+                    case 5:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong spectator pass");
+                        break;
+                    case 6:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : no spectator pass provided");
+                        break;
+                    default:
+                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : unknown error");
+                        break;
+                }
                 break;
             
             default:
