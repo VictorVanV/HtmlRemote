@@ -118,7 +118,6 @@ var HtmlRemote = (function()
             
             case IS.ISP_STA:
                 console.log('STA', pkt);
-                this.viewer.statusOverlay.messageOvl.addMessage(pkt.track);
                 
                 // pkt.flags
                 // pkt.numconns
@@ -142,6 +141,8 @@ var HtmlRemote = (function()
                 // Set track?
                 if (this.lfsHost.track != pkt.track)
                 {
+                    this.viewer.statusOverlay.messageOvl.addMessage(pkt.track);
+                    
                     this.lfsHost.track = pkt.track;
                     
                     // Setup the viewer for a new track

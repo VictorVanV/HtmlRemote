@@ -63,10 +63,15 @@
 .messagesOvl
 {
     position: absolute;
-    padding: 0px 5px;
+    padding-bottom: 2px;
     background-color: white;
     border: 1px solid black;
+}
+.messagesOvl div
+{
+    padding: 1px 5px 0px 5px;
     font-size: 9pt;
+    line-height: 1.25;
 }
 
 .hostListOvl
