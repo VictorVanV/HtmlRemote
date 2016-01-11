@@ -15,6 +15,7 @@ var HtmlRemote = (function()
             throw new Error('LFS Remote requires WebSockets, but your browser does not support them');
         }
         
+        // Our InSim websocket
         this.wsInsim = new WSInsim('isrelay.lfs.net', 47474);
         this.wsInsim.onOpen = HtmlRemote.bind(this.onRelayConnected, this);
         this.wsInsim.onClose = HtmlRemote.bind(this.onRelayClosed, this);
@@ -22,6 +23,10 @@ var HtmlRemote = (function()
         this.wsInsim.onMessage = HtmlRemote.bind(this.onRelayMessage, this);
         this.reconnCount = 0;
         
+        // Contains host and racer data.
+        this.lfsHost = null;
+        
+        // All visuals go in the Viewer
         this.viewer = new Viewer(div);
         this.viewer.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
 
@@ -99,25 +104,21 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_VER:
-                console.log('VER', pkt);
-                
                 // Request ISM packet.
                 p = new IS.IS_TINY();
                 p.subt = IS.TINY_ISM;
                 this.wsInsim.send(p.pack());
-                p = new IS.IS_TINY();
                 p.subt = IS.TINY_SST;
                 this.wsInsim.send(p.pack());
                 break;
             
             case IS.ISP_ISM:
-                console.log('ISM', pkt);
                 this.viewer.statusOverlay.messageOvl.addMessage('Connected to host "' + LfsString.toUCS2(LfsString.remColours(pkt.hname)) + '"');
                 break;
             
             case IS.ISP_STA:
                 console.log('STA', pkt);
-                this.viewer.statusOverlay.messageOvl.addMessage('have status');
+                this.viewer.statusOverlay.messageOvl.addMessage(pkt.track);
                 
                 // pkt.flags
                 // pkt.numconns
@@ -132,8 +133,20 @@ var HtmlRemote = (function()
                 // Request players?
                 
                 
+                // Init a new lfsHost??
+                if (!this.lfsHost)
+                {
+                    this.lfsHost = new LfsHost();
+                }
+                
                 // Set track?
-                // pkt.track
+                if (this.lfsHost.track != pkt.track)
+                {
+                    this.lfsHost.track = pkt.track;
+                    
+                    // Setup the viewer for a new track
+                    this.viewer.trackView.loadTrack(pkt.track);
+                }
                 
                 break;
             
@@ -214,7 +227,7 @@ var HtmlRemote = (function()
                 break;
             
             default:
-                console.log('Unknown packet', pkt);
+                //console.log('Unhandled packet', pkt);
                 break;
         }
     };

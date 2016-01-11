@@ -36,15 +36,19 @@
     background-color: #a0a0a0;
 }
 
+.trackView, .statusOvl, .messagesOvl, .hostListOvl
+{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 .trackView
 {
     position: absolute;
     z-index: 10;
     width: 100%;
     height: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
 }
 
 .statusOvl
@@ -54,9 +58,6 @@
     width: 100%;
     height: 100%;
     background-color: transparent;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
 }
 
 .messagesOvl
@@ -65,9 +66,6 @@
     padding: 0px 5px;
     background-color: white;
     border: 1px solid black;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     font-size: 9pt;
 }
 
@@ -78,10 +76,7 @@
     width: 100%;
     height: 100%;
     padding: 50px 0px;
-    background-color: rgba(0, 0, 0, 0.25);
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.75);
 }
 
 .hostListList

@@ -25,16 +25,32 @@ var MessageOverlay = (function()
         this.container = null;
     };
     
-    MessageOverlay.prototype.addMessage = function(msg)
+    MessageOverlay.prototype.addMessage = function(msg, msgId)
     {
         if (!msg) { return; }
+        if (msgId == undefined) { msgId = 0; }
         
         div = document.createElement('div');
         div.innerHTML = msg;
         div.timestamp = new Date().getTime();
         div.drawn = false;
+        div.msgId = msgId;
         this.messages.push(div);
         this.draw();
+    };
+    
+    MessageOverlay.prototype.updateMessage = function(msg, msgId)
+    {
+        if (!msg || !msgId) { return; }
+        
+        for (a = 0; a < this.messages.length; a++)
+        {
+            if (this.messages[a].msgId == msgId)
+            {
+                this.messages[a].innerHTML = msg;
+                break;
+            }
+        }
     };
     
     MessageOverlay.prototype.draw = function()
