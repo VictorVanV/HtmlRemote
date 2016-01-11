@@ -4,7 +4,7 @@ var HtmlRemote = (function()
 {
     var MAX_RECON_COUNT = 10;
     
-    var a, pkt;
+    var a, p, pkt;
     
     function HtmlRemote(div)
     {
@@ -100,14 +100,41 @@ var HtmlRemote = (function()
             
             case IS.ISP_VER:
                 console.log('VER', pkt);
+                
+                // Request ISM packet.
+                p = new IS.IS_TINY();
+                p.subt = IS.TINY_ISM;
+                this.wsInsim.send(p.pack());
+                p = new IS.IS_TINY();
+                p.subt = IS.TINY_SST;
+                this.wsInsim.send(p.pack());
                 break;
             
             case IS.ISP_ISM:
                 console.log('ISM', pkt);
+                this.viewer.statusOverlay.messageOvl.addMessage('Connected to host "' + LfsString.toUCS2(LfsString.remColours(pkt.hname)) + '"');
                 break;
             
             case IS.ISP_STA:
                 console.log('STA', pkt);
+                this.viewer.statusOverlay.messageOvl.addMessage('have status');
+                
+                // pkt.flags
+                // pkt.numconns
+                // pkt.nump
+                // pkt.numfinished
+                // pkt.racelaps
+                // pkt.qualmins
+
+                // Request connections?
+                
+                
+                // Request players?
+                
+                
+                // Set track?
+                // pkt.track
+                
                 break;
             
             case IS.ISP_RST:
@@ -155,7 +182,7 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_MSO:
-                console.log('MSO', pkt);
+                this.viewer.statusOverlay.messageOvl.addMessage(LfsString.toUCS2(LfsString.remColours(pkt.msg)));
                 break;
             
             case IS.IRP_ERR:
