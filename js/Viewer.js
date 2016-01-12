@@ -32,12 +32,12 @@ var Viewer = (function()
         if (this.dim[0] != this.container.offsetWidth ||
             this.dim[1] != this.container.offsetHeight)
         {
-            // Dimension changed - resize viewer and elements
-            
-            
             // Set dimension again
             this.dim = [this.container.offsetWidth, this.container.offsetHeight];
             console.log(this.dim);
+
+            // Dimension changed - resize viewer and elements
+            this.trackView.onResize(this.dim[0], this.dim[1]);
         }
     };
     

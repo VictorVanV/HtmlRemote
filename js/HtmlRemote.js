@@ -146,7 +146,8 @@ var HtmlRemote = (function()
                     this.lfsHost.track = pkt.track;
                     
                     // Setup the viewer for a new track
-                    this.viewer.trackView.loadTrack(pkt.track);
+                    this.viewer.trackView.loadTrack(pkt.track.slice(0, 2));
+                    this.viewer.trackView.loadPth(pkt.track);
                 }
                 
                 break;
