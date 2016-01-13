@@ -113,11 +113,11 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_ISM:
-                this.viewer.statusOverlay.messageOvl.addMessage('Connected to host "' + LfsString.toUCS2(LfsString.remColours(pkt.hname)) + '"');
+                this.viewer.messageOvl.addMessage('Connected to host "' + LfsString.toUCS2(LfsString.remColours(pkt.hname)) + '"');
                 break;
             
             case IS.ISP_STA:
-                console.log('STA', pkt);
+                //console.log('STA', pkt);
                 
                 // pkt.flags
                 // pkt.numconns
@@ -141,7 +141,7 @@ var HtmlRemote = (function()
                 // Set track?
                 if (this.lfsHost.track != pkt.track)
                 {
-                    this.viewer.statusOverlay.messageOvl.addMessage(pkt.track);
+                    this.viewer.messageOvl.addMessage('Loading track ' + pkt.track);
                     
                     this.lfsHost.track = pkt.track;
                     
@@ -153,39 +153,39 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_RST:
-                console.log('RST', pkt);
+                //console.log('RST', pkt);
                 break;
             
             case IS.ISP_NCN:
-                console.log('NCN', pkt);
+                //console.log('NCN', pkt);
                 break;
             
             case IS.ISP_CNL:
-                console.log('CNL', pkt);
+                //console.log('CNL', pkt);
                 break;
             
             case IS.ISP_CPR:
-                console.log('CPR', pkt);
+                //console.log('CPR', pkt);
                 break;
             
             case IS.ISP_NPL:
-                console.log('NPL', pkt);
+                //console.log('NPL', pkt);
                 break;
             
             case IS.ISP_PLP:
-                console.log('PLP', pkt);
+                //console.log('PLP', pkt);
                 break;
             
             case IS.ISP_PLL:
-                console.log('PLL', pkt);
+                //console.log('PLL', pkt);
                 break;
             
             case IS.ISP_LAP:
-                console.log('LAP', pkt);
+                //console.log('LAP', pkt);
                 break;
             
             case IS.ISP_SPX:
-                console.log('SPX', pkt);
+                //console.log('SPX', pkt);
                 break;
             
             case IS.ISP_MCI:
@@ -193,37 +193,37 @@ var HtmlRemote = (function()
                 break;
             
             case IS.IRP_ARP:
-                console.log('ARP', pkt);
+                //console.log('ARP', pkt);
                 break;
             
             case IS.ISP_MSO:
-                this.viewer.statusOverlay.messageOvl.addMessage(LfsString.toUCS2(LfsString.remColours(pkt.msg)));
+                this.viewer.messageOvl.addMessage(LfsString.toUCS2(LfsString.remColours(pkt.msg)));
                 break;
             
             case IS.IRP_ERR:
-                console.log('ERR', pkt);
+                //console.log('ERR', pkt);
                 switch(pkt.errno)
                 {
                     case 1:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : invalid packet");
+                        this.viewer.messageOvl.addMessage("** Relay error : invalid packet");
                         break;
                     case 2:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : non forwardable packet");
+                        this.viewer.messageOvl.addMessage("** Relay error : non forwardable packet");
                         break;
                     case 3:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong hostname");
+                        this.viewer.messageOvl.addMessage("** Relay error : wrong hostname");
                         break;
                     case 4:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong admin pass");
+                        this.viewer.messageOvl.addMessage("** Relay error : wrong admin pass");
                         break;
                     case 5:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : wrong spectator pass");
+                        this.viewer.messageOvl.addMessage("** Relay error : wrong spectator pass");
                         break;
                     case 6:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : no spectator pass provided");
+                        this.viewer.messageOvl.addMessage("** Relay error : no spectator pass provided");
                         break;
                     default:
-                        this.viewer.statusOverlay.messageOvl.addMessage("** Relay error : unknown error");
+                        this.viewer.messageOvl.addMessage("** Relay error : unknown error");
                         break;
                 }
                 break;
@@ -306,6 +306,12 @@ var HtmlRemote = (function()
     {
         e = e || window.event;
         return e.target || e.srcElement;
+    };
+    
+    HtmlRemote.htmlspecialchars = function(t)
+    {
+        t = t.replace(/</g, '&lt;');
+        return t.replace(/>/g, '&gt;');
     };
         
     return HtmlRemote;
