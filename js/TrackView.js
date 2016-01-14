@@ -2,7 +2,7 @@
 
 var TrackView = (function()
 {
-    var a;
+    var a, t, z;
     
     function TrackView(container)
     {
@@ -12,11 +12,9 @@ var TrackView = (function()
         this.div.width = this.container.offsetWidth;
         this.div.height = this.container.offsetHeight;
         this.container.appendChild(this.div);
-        
-        HtmlRemote.addEvent(this.div, 'mousedown', HtmlRemote.bind(this.onCvMouseDown, this));
-        this.cvMouseUpFn = HtmlRemote.bind(this.onCvMouseUp, this);
-        this.cvMouseMoveFn = HtmlRemote.bind(this.onCvMouseMove, this);
+
         this.sPos = [0, 0];
+        this.zoom = 128;
         
         this.ctx = this.div.getContext('2d');
         
@@ -27,19 +25,38 @@ var TrackView = (function()
         this.trackPosB = [0, 0];
         this.pth = null;
         this.cars = [];
+
+        this.cvMouseDownFn = HtmlRemote.bind(this.onCvMouseDown, this);
+        this.cvMouseUpFn = HtmlRemote.bind(this.onCvMouseUp, this);
+        this.cvMouseMoveFn = HtmlRemote.bind(this.onCvMouseMove, this);
+        this.cvMouseWheelFn = HtmlRemote.bind(this.onCvMouseWheel, this);
+        this.trackImgLoadFn = HtmlRemote.bind(this.onTrackLoaded, this);
+        this.trackImgLoadErrorFn = HtmlRemote.bind(this.onTrackLoadError, this);
+
+        HtmlRemote.addEvent(this.div, 'mousedown', this.cvMouseDownFn);
+
+        if (window.addEventListener) {
+            window.addEventListener('DOMMouseScroll', this.cvMouseWheelFn, false);
+        } else {
+            HtmlRemote.addEvent(this.div, 'mousewheel', this.cvMouseWheelFn);
+        }
     }
     
     TrackView.prototype.destroy = function()
     {
+        HtmlRemote.removeEvent(this.div, 'mousedown', this.cvMouseDownFn);
         this.container.removeChild(this.div);
         this.container = null;
+        this.cvMouseUpFn = null;
+        this.cvMouseMoveFn = null;
+        this.trackImgLoadFn = null;
+        this.trackImgLoadErrorFn = null;
     };
     
     TrackView.prototype.onResize = function(w, h)
     {
         this.div.width = w;
         this.div.height = h;
-        this.draw();
     };
     
     TrackView.prototype.loadTrack = function(track)
@@ -50,8 +67,8 @@ var TrackView = (function()
         this.trackImg.loading = true;
         this.trackImg.trackName = track;
         this.trackImg.src = 'http://img.lfs.net/remote/maps/' + track + '.jpg';
-        HtmlRemote.addEvent(this.trackImg, 'load', HtmlRemote.bind(this.onTrackLoaded, this));
-        HtmlRemote.addEvent(this.trackImg, 'error', HtmlRemote.bind(this.onTrackLoadError, this));
+        HtmlRemote.addEvent(this.trackImg, 'load', this.trackImgLoadFn);
+        HtmlRemote.addEvent(this.trackImg, 'error', this.trackImgLoadErrorFn);
     };
     
     TrackView.prototype.onTrackLoaded = function(e)
@@ -63,8 +80,6 @@ var TrackView = (function()
         HtmlRemote.removeEvent(a, 'error', HtmlRemote.bind(this.onTrackLoadError, this));
         
         if (this.trackImg.trackName != a.trackName) { return; }
-        
-        this.draw();
     };
     
     TrackView.prototype.onTrackLoadError = function(e)
@@ -72,8 +87,8 @@ var TrackView = (function()
         a = HtmlRemote.getETarget(e);
         a.loading = false;
 
-        HtmlRemote.removeEvent(a, 'load', HtmlRemote.bind(this.onTrackLoaded, this));
-        HtmlRemote.removeEvent(a, 'error', HtmlRemote.bind(this.onTrackLoadError, this));
+        HtmlRemote.removeEvent(a, 'load', this.trackImgLoadFn);
+        HtmlRemote.removeEvent(a, 'error', this.trackImgLoadErrorFn);
 
         console.log('Error loading track map', e);
         this.trackImg = null;
@@ -84,14 +99,18 @@ var TrackView = (function()
         console.log('Loading pth http://img.lfs.net/remote/pth/' + track + '.pth.gz');
     };
     
-    TrackView.prototype.draw = function()
+    TrackView.prototype.draw = function(time)
     {
         // Clear screen
         this.ctx.fillStyle = 'rgb(' + this.trackCol.join(',') + ')';
         this.ctx.fillRect(0, 0, this.div.width, this.div.height);
         this.ctx.save();
         
-        this.ctx.translate(this.trackPos[0], this.trackPos[1]);
+        z = this.zoom / 128;
+//        this.ctx.translate(this.div.width * 0.5, this.div.height * 0.5);
+        this.ctx.scale(z, z);
+//        this.ctx.translate((-this.div.width * 0.5) * 1/z, (-this.div.height * 0.5) * 1/z);
+        this.ctx.translate(this.trackPos[0] * 1/z, this.trackPos[1] * 1/z);
         
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
         
@@ -100,6 +119,7 @@ var TrackView = (function()
     
     TrackView.prototype.onCvMouseDown = function(e)
     {
+        HtmlRemote.blockSelect();
         this.sPos = [e.clientX, e.clientY];
         this.trackPosB[0] = this.trackPos[0];
         this.trackPosB[1] = this.trackPos[1];
@@ -109,6 +129,7 @@ var TrackView = (function()
     
     TrackView.prototype.onCvMouseUp = function(e)
     {
+        HtmlRemote.unBlockSelect();
         HtmlRemote.removeEvent(window, 'mouseup', this.cvMouseUpFn);
         HtmlRemote.removeEvent(window, 'mousemove', this.cvMouseMoveFn);
     };
@@ -118,7 +139,35 @@ var TrackView = (function()
         a = [e.clientX - this.sPos[0], e.clientY - this.sPos[1]];
         this.trackPos[0] = this.trackPosB[0] + a[0];
         this.trackPos[1] = this.trackPosB[1] + a[1];
-        this.draw();
+    };
+    
+    TrackView.prototype.onCvMouseWheel = function(e)
+    {
+        t = HtmlRemote.getETarget(e);
+        if (t !== this.div) { return; }
+        
+        var delta = 0;
+        if (e.wheelDelta)
+        {
+            delta = e.wheelDelta / 120;
+            if (window.opera) {
+                delta = -delta;
+            }
+        }
+        else if (e.detail)
+        {
+            delta = -e.detail / 3;
+        }
+        
+        //var oldZoom = this.zoom;
+        if (delta > 0)
+        {
+            this.zoom = Math.min(1024, this.zoom * 1.5);
+        }
+        else
+        {
+            this.zoom = Math.max(32, this.zoom / 1.5);
+        }
     };
     
     return TrackView;

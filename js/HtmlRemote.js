@@ -141,6 +141,7 @@ var HtmlRemote = (function()
                 // Set track?
                 if (this.lfsHost.track != pkt.track)
                 {
+                    this.viewer.startAnimation();
                     this.viewer.messageOvl.addMessage('Loading track ' + pkt.track);
                     
                     this.lfsHost.track = pkt.track;
@@ -313,6 +314,20 @@ var HtmlRemote = (function()
         t = t.replace(/</g, '&lt;');
         return t.replace(/>/g, '&gt;');
     };
-        
+    
+    HtmlRemote.blockSelect = function()
+    {
+        document.onselectstart = new Function ("return false");
+        document.ondragstart = new Function ("return false");
+        document.onmousedown = function(e){return false;};
+    };
+    
+    HtmlRemote.unBlockSelect = function()
+    {
+        document.onselectstart = new Function ("return true");
+        document.ondragstart = new Function ("return true");
+        document.onmousedown = null;
+    };
+
     return HtmlRemote;
 })();

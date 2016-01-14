@@ -11,8 +11,11 @@ var Viewer = (function()
         //this.statusOverlay = new StatusOverlay(this.container);
         this.messageOvl = new MessageOverlay(this.container);
         this.hostListOverlay = null;
-        
         this.onHostSelect = null;
+        
+        this.running = false;
+        
+        this.tickFn = HtmlRemote.bind(this.tick, this);
         
         HtmlRemote.addEvent(window, 'resize', HtmlRemote.bind(this.handleWinResize, this));
     }
@@ -67,6 +70,27 @@ var Viewer = (function()
         if (this.onHostSelect !== null)
         {
             this.onHostSelect(hostInfo);
+        }
+    };
+    
+    Viewer.prototype.startAnimation = function()
+    {
+        window.requestAnimationFrame(this.tickFn);
+        this.running = true;
+    };
+    
+    Viewer.prototype.stopAnimation = function()
+    {
+        window.cancelAnimationFrame(this.tickFn);
+        this.running = false;
+    };
+    
+    Viewer.prototype.tick = function(t)
+    {
+        this.trackView.draw(t);
+        
+        if (this.running) {
+            window.requestAnimationFrame(this.tickFn);
         }
     };
     
