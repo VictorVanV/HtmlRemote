@@ -328,6 +328,18 @@ var HtmlRemote = (function()
         document.ondragstart = new Function ("return true");
         document.onmousedown = null;
     };
-
+    
+    HtmlRemote.getObAbsLoc = function(ob)
+    {
+        var loc = [0,0];
+        if (!ob) { return loc; }
+        do {
+            loc[0] += ob.offsetLeft || 0;
+            loc[1] += ob.offsetTop || 0;
+            ob = ob.offsetParent;
+        } while(ob);
+        return loc;
+    }
+    
     return HtmlRemote;
 })();
