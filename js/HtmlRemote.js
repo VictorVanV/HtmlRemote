@@ -23,8 +23,9 @@ var HtmlRemote = (function()
         this.wsInsim.onMessage = HtmlRemote.bind(this.onRelayMessage, this);
         this.reconnCount = 0;
         
-        // Contains host and racer data.
+        // Contains host data.
         this.lfsHost = null;
+        this.syncing = false;
         
         // All visuals go in the Viewer
         this.viewer = new Viewer(div);
@@ -126,16 +127,27 @@ var HtmlRemote = (function()
                 // pkt.racelaps
                 // pkt.qualmins
 
-                // Request connections?
-                
-                
-                // Request players?
-                
-                
                 // Init a new lfsHost??
                 if (!this.lfsHost)
                 {
                     this.lfsHost = new LfsHost();
+                    this.viewer.trackView.players = this.lfsHost.players;
+                }
+                
+                // Request connections?
+                if (this.lfsHost.numConns != pkt.numconns)
+                {
+                    p = new IS.IS_TINY();
+                    p.subt = IS.TINY_NCN;
+                    this.wsInsim.send(p.pack());
+//                }
+//                
+//                // Request players?
+//                if (this.lfsHost.numPlayers != pkt.nump)
+//                {
+//                    p = new IS.IS_TINY();
+                    p.subt = IS.TINY_NPL;
+                    this.wsInsim.send(p.pack());
                 }
                 
                 // Set track?
@@ -158,11 +170,11 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_NCN:
-                //console.log('NCN', pkt);
+                this.lfsHost.connectionNew(pkt);
                 break;
             
             case IS.ISP_CNL:
-                //console.log('CNL', pkt);
+                this.lfsHost.connectionLeave(pkt);
                 break;
             
             case IS.ISP_CPR:
@@ -170,15 +182,15 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_NPL:
-                //console.log('NPL', pkt);
+                this.lfsHost.playerNew(pkt);
                 break;
             
             case IS.ISP_PLP:
-                //console.log('PLP', pkt);
+                this.lfsHost.playerPit(pkt);
                 break;
             
             case IS.ISP_PLL:
-                //console.log('PLL', pkt);
+                this.lfsHost.playerLeave(pkt);
                 break;
             
             case IS.ISP_LAP:
@@ -190,7 +202,7 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_MCI:
-                //console.log('MCI', pkt);
+                this.lfsHost.processMci(pkt);
                 break;
             
             case IS.IRP_ARP:
@@ -268,7 +280,7 @@ var HtmlRemote = (function()
     
     HtmlRemote.prototype.handleHostSelect = function(hostInfo)
     {
-        console.log(hostInfo.hname);
+        //console.log(hostInfo);
         
         pkt = new IS.IR_SEL();
         pkt.reqi = 1;
@@ -276,6 +288,12 @@ var HtmlRemote = (function()
         pkt.admin = '';
         pkt.spec = '';
         this.wsInsim.send(pkt.pack());
+        
+        if (this.lfsHost)
+        {
+            this.lfsHost.destroy();
+            this.lfsHost = null;
+        }
     };
     
     HtmlRemote.prototype.start = function()

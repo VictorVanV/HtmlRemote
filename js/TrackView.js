@@ -2,7 +2,7 @@
 
 var TrackView = (function()
 {
-    var a, t, z, p = [0, 0];
+    var a, t, z, p = [0, 0], ply, pos;
     
     function TrackView(container)
     {
@@ -24,7 +24,7 @@ var TrackView = (function()
         this.trackPos = [this.div.width * 0.5 + 0.5, this.div.height * 0.5 + 0.5];
         this.trackPosB = [0, 0];
         this.pth = null;
-        this.cars = [];
+        this.players = null;
 
         this.cvMouseDownFn = HtmlRemote.bind(this.onCvMouseDown, this);
         this.cvMouseUpFn = HtmlRemote.bind(this.onCvMouseUp, this);
@@ -42,6 +42,7 @@ var TrackView = (function()
     {
         HtmlRemote.removeEvent(this.div, 'mousedown', this.cvMouseDownFn);
         this.container.removeChild(this.div);
+        this.players = null;
         this.container = null;
         this.cvMouseUpFn = null;
         this.cvMouseMoveFn = null;
@@ -108,6 +109,20 @@ var TrackView = (function()
         
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
         
+        if (this.players)
+        {
+            for (a = 0; a < this.players.length; a++)
+            {
+                ply = this.players[a];
+                if (!ply) { continue; }
+                pos = ply.getPos(time);
+                
+                this.ctx.fillStyle = 'rgb(0, 0, 255)';
+                this.ctx.fillRect(pos[0] - 2, pos[1] - 2,
+                                  4, 4);
+            }
+        }
+        
         this.ctx.restore();
     };
     
@@ -145,7 +160,7 @@ var TrackView = (function()
             oldZoom = this.zoom,
             contPos = HtmlRemote.getObAbsLoc(this.container);
 
-        this.zoom = (delta > 0) ? Math.min(1024, this.zoom * 1.5) : this.zoom = Math.max(32, this.zoom / 1.5);
+        this.zoom = (delta > 0) ? Math.min(1024, this.zoom * 1.25) : Math.max(32, this.zoom / 1.25);
         
         p[0] = (e.clientX - contPos[0] - this.trackPos[0]) / (oldZoom / 128);
         p[1] = (e.clientY - contPos[1] - this.trackPos[1]) / (oldZoom / 128);
