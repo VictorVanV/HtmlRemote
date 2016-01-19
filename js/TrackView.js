@@ -34,12 +34,8 @@ var TrackView = (function()
         this.trackImgLoadErrorFn = HtmlRemote.bind(this.onTrackLoadError, this);
 
         HtmlRemote.addEvent(this.div, 'mousedown', this.cvMouseDownFn);
-
-        if (window.addEventListener) {
-            window.addEventListener('DOMMouseScroll', this.cvMouseWheelFn, false);
-        } else {
-            HtmlRemote.addEvent(this.div, 'mousewheel', this.cvMouseWheelFn);
-        }
+        HtmlRemote.addEvent(this.div, 'DOMMouseScroll', this.cvMouseWheelFn);   // FF
+        HtmlRemote.addEvent(this.div, 'mousewheel', this.cvMouseWheelFn);
     }
     
     TrackView.prototype.destroy = function()
@@ -145,38 +141,20 @@ var TrackView = (function()
         t = HtmlRemote.getETarget(e);
         if (t !== this.div) { return; }
         
-        var delta = 0;
-        if (e.wheelDelta)
-        {
-            delta = e.wheelDelta / 120;
-            if (window.opera) {
-                delta = -delta;
-            }
-        }
-        else if (e.detail)
-        {
-            delta = -e.detail / 3;
-        }
+        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail))),
+            oldZoom = this.zoom,
+            contPos = HtmlRemote.getObAbsLoc(this.container);
+
+        this.zoom = (delta > 0) ? Math.min(1024, this.zoom * 1.5) : this.zoom = Math.max(32, this.zoom / 1.5);
         
-        var oldZoom = this.zoom;
-        if (delta > 0)
-        {
-            this.zoom = Math.min(1024, this.zoom * 1.5);
-        }
-        else
-        {
-            this.zoom = Math.max(32, this.zoom / 1.5);
-        }
-        
-        var contPos = HtmlRemote.getObAbsLoc(this.container);
         p[0] = (e.clientX - contPos[0] - this.trackPos[0]) / (oldZoom / 128);
         p[1] = (e.clientY - contPos[1] - this.trackPos[1]) / (oldZoom / 128);
         
-		var scaleMult       = oldZoom / this.zoom;
-		var offsetX         = p[0] - (p[0] * scaleMult);
-		var offsetY         = p[1] - (p[1] * scaleMult);
-		this.trackPos[0]    -= offsetX * this.zoom / 128;
-		this.trackPos[1]    -= offsetY * this.zoom / 128;
+        var scaleMult       = oldZoom / this.zoom;
+        var offsetX         = p[0] - (p[0] * scaleMult);
+        var offsetY         = p[1] - (p[1] * scaleMult);
+        this.trackPos[0]    -= offsetX * this.zoom / 128;
+        this.trackPos[1]    -= offsetY * this.zoom / 128;
     };
     
     return TrackView;
