@@ -111,6 +111,14 @@ var HtmlRemote = (function()
                 this.wsInsim.send(p.pack());
                 p.subt = IS.TINY_SST;
                 this.wsInsim.send(p.pack());
+
+                // Init a new lfsHost??
+                if (!this.lfsHost)
+                {
+                    this.lfsHost = new LfsHost();
+                    this.viewer.trackView.players = this.lfsHost.players;
+                }
+                
                 break;
             
             case IS.ISP_ISM:
@@ -126,13 +134,6 @@ var HtmlRemote = (function()
                 // pkt.numfinished
                 // pkt.racelaps
                 // pkt.qualmins
-
-                // Init a new lfsHost??
-                if (!this.lfsHost)
-                {
-                    this.lfsHost = new LfsHost();
-                    this.viewer.trackView.players = this.lfsHost.players;
-                }
                 
                 // Request connections?
                 if (this.lfsHost.numConns != pkt.numconns)

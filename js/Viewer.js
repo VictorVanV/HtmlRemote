@@ -10,6 +10,8 @@ var Viewer = (function()
         this.trackView = new TrackView(this.container);
         //this.statusOverlay = new StatusOverlay(this.container);
         this.messageOvl = new MessageOverlay(this.container);
+        this.hostView = new HostView(this.container);
+        this.racerView = new RacerView(this.container);
         this.hostListOverlay = null;
         this.onHostSelect = null;
         

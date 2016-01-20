@@ -2,7 +2,7 @@
 
 var TrackView = (function()
 {
-    var a, t, z, p = [0, 0], ply, pos;
+    var a, t, p = [0, 0], ply, pos;
     
     function TrackView(container)
     {
@@ -14,13 +14,13 @@ var TrackView = (function()
         this.container.appendChild(this.div);
 
         this.sPos = [0, 0];
-        this.zoom = 128;
+        this.zoom = 1;
         
         this.ctx = this.div.getContext('2d');
         
         this.trackName = '';
         this.trackImg = null;
-        this.trackCol = [100, 100, 100];
+        this.trackCol = 'rgb(100, 100, 100)';
         this.trackPos = [this.div.width * 0.5 + 0.5, this.div.height * 0.5 + 0.5];
         this.trackPosB = [0, 0];
         this.pth = null;
@@ -34,8 +34,8 @@ var TrackView = (function()
         this.trackImgLoadErrorFn = HtmlRemote.bind(this.onTrackLoadError, this);
 
         HtmlRemote.addEvent(this.div, 'mousedown', this.cvMouseDownFn);
-        HtmlRemote.addEvent(this.div, 'DOMMouseScroll', this.cvMouseWheelFn);   // FF
-        HtmlRemote.addEvent(this.div, 'mousewheel', this.cvMouseWheelFn);
+        HtmlRemote.addEvent(window, 'DOMMouseScroll', this.cvMouseWheelFn);   // FF
+        HtmlRemote.addEvent(window, 'mousewheel', this.cvMouseWheelFn);
     }
     
     TrackView.prototype.destroy = function()
@@ -76,6 +76,8 @@ var TrackView = (function()
         HtmlRemote.removeEvent(a, 'load', HtmlRemote.bind(this.onTrackLoaded, this));
         HtmlRemote.removeEvent(a, 'error', HtmlRemote.bind(this.onTrackLoadError, this));
         
+        this.setTrackBg();
+        
         if (this.trackImg.trackName != a.trackName) { return; }
     };
     
@@ -91,6 +93,37 @@ var TrackView = (function()
         this.trackImg = null;
     };
     
+    TrackView.prototype.setTrackBg = function()
+    {
+        switch (this.trackName)
+        {
+            case 'BL' :
+                this.trackCol = '#2B2B2B';
+                break;
+            case 'SO' :
+                this.trackCol = '#262E30';
+                break;
+            case 'FE' :
+                this.trackCol = '#385158';
+                break;
+            case 'KY' :
+                this.trackCol = '#303030';
+                break;
+            case 'WE' :
+                this.trackCol = '#1F2729';
+                break;
+            case 'AS' :
+                this.trackCol = '#2E2E2E';
+                break;
+            case 'AU' :
+                this.trackCol = '#5F5F3B';
+                break;
+            case 'RO' :
+                this.trackCol = '#2B2B2B';
+                break;
+        }
+    };
+    
     TrackView.prototype.loadPth = function(track)
     {
         console.log('Loading pth http://img.lfs.net/remote/pth/' + track + '.pth.gz');
@@ -98,14 +131,14 @@ var TrackView = (function()
     
     TrackView.prototype.draw = function(time)
     {
-        // Clear screen
-        this.ctx.fillStyle = 'rgb(' + this.trackCol.join(',') + ')';
-        this.ctx.fillRect(0, 0, this.div.width, this.div.height);
         this.ctx.save();
+
+        // Clear screen
+        this.ctx.fillStyle = this.trackCol;
+        this.ctx.fillRect(0, 0, this.div.width, this.div.height);
         
-        z = this.zoom / 128;
         this.ctx.translate(this.trackPos[0], this.trackPos[1]);
-        this.ctx.scale(z, z);
+        this.ctx.scale(this.zoom, this.zoom);
         
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
         
@@ -114,8 +147,9 @@ var TrackView = (function()
             for (a = 0; a < this.players.length; a++)
             {
                 ply = this.players[a];
-                if (!ply) { continue; }
+                if (!ply || ply.inPits) { continue; }
                 pos = ply.getPos(time);
+                if (pos[0] === 0 && pos[1] === 0) { continue; }
                 
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
                 this.ctx.fillRect(pos[0] - 2, pos[1] - 2,
@@ -153,23 +187,44 @@ var TrackView = (function()
     
     TrackView.prototype.onCvMouseWheel = function(e)
     {
+        // Traverse upwards, up to this.div, to see if there is a scrollable element
+        a = false;
         t = HtmlRemote.getETarget(e);
-        if (t !== this.div) { return; }
+        do
+        {
+            if (t === this.container)
+            {
+                a = true;
+                break;
+            }
+            else if (t.scrollHeight > t.offsetHeight + 6)
+            {
+                return true;
+            }
+            
+            t = t.parentNode;
+        } while (t.parentNode);
         
+        if (!a)
+        {
+            return true;
+        }
+        
+        // Zoom
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail))),
             oldZoom = this.zoom,
             contPos = HtmlRemote.getObAbsLoc(this.container);
 
-        this.zoom = (delta > 0) ? Math.min(1024, this.zoom * 1.25) : Math.max(32, this.zoom / 1.25);
+        this.zoom = (delta > 0) ? Math.min(8, this.zoom * 1.25) : Math.max(0.25, this.zoom / 1.25);
         
-        p[0] = (e.clientX - contPos[0] - this.trackPos[0]) / (oldZoom / 128);
-        p[1] = (e.clientY - contPos[1] - this.trackPos[1]) / (oldZoom / 128);
+        p[0] = (e.clientX - contPos[0] - this.trackPos[0]) / oldZoom;
+        p[1] = (e.clientY - contPos[1] - this.trackPos[1]) / oldZoom;
         
-        var scaleMult       = oldZoom / this.zoom;
-        var offsetX         = p[0] - (p[0] * scaleMult);
-        var offsetY         = p[1] - (p[1] * scaleMult);
-        this.trackPos[0]    -= offsetX * this.zoom / 128;
-        this.trackPos[1]    -= offsetY * this.zoom / 128;
+        a = oldZoom / this.zoom;
+        this.trackPos[0] -= (p[0] - (p[0] * a)) * this.zoom;
+        this.trackPos[1] -= (p[1] - (p[1] * a)) * this.zoom;
+        
+        return false;
     };
     
     return TrackView;

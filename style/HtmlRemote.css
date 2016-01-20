@@ -51,6 +51,20 @@
     height: 100%;
 }
 
+.hostView
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.racerView
+{
+    position: absolute;
+    top: 40px;
+    right: 0;
+}
+
 /*.statusOvl
 {
     position: absolute;
