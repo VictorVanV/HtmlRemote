@@ -63,16 +63,17 @@ var LfsHost = (function()
         {
             p = this.players[pkt.plid];
         }
-        p.ucId          = pkt.ucid;
-        p.userName      = this.conns[pkt.ucid].userName;
-        p.playerName    = pkt.pname;
-        p.plateName     = pkt.plate;
-        p.ptype         = pkt.ptype;
-        p.flags         = pkt.flags;
-        p.carName       = pkt.cname;
-        p.skinName      = pkt.sname;
-        p.tyres         = pkt.tyres;
-        p.inPits        = false;
+        p.ucId              = pkt.ucid;
+        p.userName          = this.conns[pkt.ucid].userName;
+        p.playerName        = pkt.pname;
+        p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
+        p.plateName         = pkt.plate;
+        p.ptype             = pkt.ptype;
+        p.flags             = pkt.flags;
+        p.carName           = pkt.cname;
+        p.skinName          = pkt.sname;
+        p.tyres             = pkt.tyres;
+        p.inPits            = false;
     };
     
     LfsHost.prototype.playerPit = function(pkt)
@@ -100,6 +101,7 @@ var LfsHost = (function()
             p.pos[0] = pkt.info[a].x / 65536;
             p.pos[1] = pkt.info[a].y / -65536;
             p.pos[2] = pkt.info[a].z / 65536;
+            p.racePos = pkt.info[a].position;
         }
     };
     

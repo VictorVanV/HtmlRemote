@@ -23,8 +23,11 @@ var TrackView = (function()
         this.trackCol = 'rgb(100, 100, 100)';
         this.trackPos = [this.div.width * 0.5 + 0.5, this.div.height * 0.5 + 0.5];
         this.trackPosB = [0, 0];
-        this.pth = null;
+        this.path = new LfsPath();
+        this.pathCv = document.createElement('canvas');
         this.players = null;
+        this.showRacePos = true;
+        this.ctrlShift = false;
 
         this.cvMouseDownFn = HtmlRemote.bind(this.onCvMouseDown, this);
         this.cvMouseUpFn = HtmlRemote.bind(this.onCvMouseUp, this);
@@ -32,10 +35,16 @@ var TrackView = (function()
         this.cvMouseWheelFn = HtmlRemote.bind(this.onCvMouseWheel, this);
         this.trackImgLoadFn = HtmlRemote.bind(this.onTrackLoaded, this);
         this.trackImgLoadErrorFn = HtmlRemote.bind(this.onTrackLoadError, this);
+        this.pathLoadFn = HtmlRemote.bind(this.onPathLoaded, this);
+        this.pathLoadErrorFn = HtmlRemote.bind(this.onPathLoadError, this);
+        this.keyDownFn = HtmlRemote.bind(this.onKeyDown, this);
+        this.keyUpFn = HtmlRemote.bind(this.onKeyUp, this);
 
         HtmlRemote.addEvent(this.div, 'mousedown', this.cvMouseDownFn);
         HtmlRemote.addEvent(window, 'DOMMouseScroll', this.cvMouseWheelFn);   // FF
         HtmlRemote.addEvent(window, 'mousewheel', this.cvMouseWheelFn);
+        HtmlRemote.addEvent(document, 'keydown', this.keyDownFn);
+        HtmlRemote.addEvent(document, 'keyup', this.keyUpFn);
     }
     
     TrackView.prototype.destroy = function()
@@ -58,7 +67,6 @@ var TrackView = (function()
     
     TrackView.prototype.loadTrack = function(track)
     {
-        console.log('Gonna load track "' + track + '" into the track view');
         this.trackName = track;
         this.trackImg = new Image();
         this.trackImg.loading = true;
@@ -73,8 +81,8 @@ var TrackView = (function()
         a = HtmlRemote.getETarget(e);
         a.loading = false;
 
-        HtmlRemote.removeEvent(a, 'load', HtmlRemote.bind(this.onTrackLoaded, this));
-        HtmlRemote.removeEvent(a, 'error', HtmlRemote.bind(this.onTrackLoadError, this));
+        HtmlRemote.removeEvent(a, 'load', this.trackImgLoadFn);
+        HtmlRemote.removeEvent(a, 'error', this.trackImgLoadErrorFn);
         
         this.setTrackBg();
         
@@ -91,6 +99,30 @@ var TrackView = (function()
 
         console.log('Error loading track map', e);
         this.trackImg = null;
+    };
+    
+    TrackView.prototype.loadPth = function(track)
+    {
+        var rq = new DataRequest(track, 'http://img.lfs.net/remote/pth/' + track + '.pth');
+        rq.responseType = 'arraybuffer';
+        rq.responseCallback = HtmlRemote.bind(this.pathLoadFn, this);
+        rq.request();
+        
+        this.path.destroy();
+    };
+    
+    TrackView.prototype.onPathLoaded = function(id, dataBuf)
+    {
+        this.path.parse(dataBuf);
+        
+        this.pathCv.width = 2560 * this.zoom;
+        this.pathCv.height = 2560 * this.zoom;
+        this.path.generate(this.pathCv, this.zoom);
+    };
+    
+    TrackView.prototype.onPathLoadError = function(e)
+    {
+        console.log('Error loading track path', e);
     };
     
     TrackView.prototype.setTrackBg = function()
@@ -124,11 +156,6 @@ var TrackView = (function()
         }
     };
     
-    TrackView.prototype.loadPth = function(track)
-    {
-        console.log('Loading pth http://img.lfs.net/remote/pth/' + track + '.pth.gz');
-    };
-    
     TrackView.prototype.draw = function(time)
     {
         this.ctx.save();
@@ -141,6 +168,7 @@ var TrackView = (function()
         this.ctx.scale(this.zoom, this.zoom);
         
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
+        this.ctx.drawImage(this.pathCv, -1280, -1280, 2560, 2560);
         
         if (this.players)
         {
@@ -154,6 +182,20 @@ var TrackView = (function()
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
                 this.ctx.fillRect(pos[0] - 2, pos[1] - 2,
                                   4, 4);
+                
+                t = '';
+                this.ctx.font = (14 / this.zoom) + 'px Arial';
+                this.ctx.fillStyle = 'black';
+                if (this.showRacePos) {
+                    t += ply.racePos + '. ';
+                }
+                if (this.ctrlShift) {
+                    t += ply.userName;
+                } else {
+                    t += ply.playerNameUtf8;
+                }
+
+                this.ctx.fillText(t + '. ', pos[0], pos[1]);
             }
         }
         
@@ -225,6 +267,22 @@ var TrackView = (function()
         this.trackPos[1] -= (p[1] - (p[1] * a)) * this.zoom;
         
         return false;
+    };
+    
+    TrackView.prototype.onKeyDown = function(e)
+    {
+        if (e.ctrlKey && e.shiftKey)
+        {
+            this.ctrlShift = true;
+        }
+    };
+    
+    TrackView.prototype.onKeyUp = function(e)
+    {
+        if (!e.ctrlKey || !e.shiftKey)
+        {
+            this.ctrlShift = false;
+        }
     };
     
     return TrackView;

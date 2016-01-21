@@ -360,5 +360,33 @@ var HtmlRemote = (function()
         return loc;
     }
     
+    HtmlRemote.getDVNullString = function(buf, offset, maxLen)
+    {
+        if (!(buf instanceof DataView))
+        {
+            throw new Error("Invalid argument type for buf. Must be DataView.");
+        }
+        if (offset == undefined)
+        {
+            offset = 0;
+        }
+        if (maxLen == undefined)
+        {
+            throw new Error("strSize may not be undefined or 0");
+        }
+        
+        // Read the individual bytes, convert to chars until null byte encountered.
+        var txt = "";
+        var chr;
+        for (var a = 0; a < maxLen; a++)
+        {
+            chr = buf.getUint8(offset++);
+            if (chr === 0) { break; }
+            txt += String.fromCharCode(chr);
+        }
+        
+        return txt;
+    };
+    
     return HtmlRemote;
 })();

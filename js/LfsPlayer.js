@@ -4,19 +4,21 @@ var LfsPlayer = (function()
 {
     function LfsPlayer()
     {
-        this.ucId       = 0;
-        this.plId       = 0;
-        this.userName   = '';
-        this.playerName = '';
-        this.plateName  = '';
-        this.playerType = 0;
-        this.flags      = 0;
-        this.carName    = '';
-        this.skinName   = '';
-        this.tyres      = null;
-        this.inPits     = false;
+        this.ucId           = 0;
+        this.plId           = 0;
+        this.userName       = '';
+        this.playerName     = '';
+        this.playerNameUtf8 = '';
+        this.plateName      = '';
+        this.playerType     = 0;
+        this.flags          = 0;
+        this.carName        = '';
+        this.skinName       = '';
+        this.tyres          = null;
+        this.inPits         = false;
         
-        this.pos        = [0, 0, 0];
+        this.racePos        = 0;
+        this.pos            = [0, 0, 0];
     }
     
     LfsPlayer.prototype.destroy = function()
