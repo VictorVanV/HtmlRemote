@@ -271,18 +271,12 @@ var TrackView = (function()
     
     TrackView.prototype.onKeyDown = function(e)
     {
-        if (e.ctrlKey && e.shiftKey)
-        {
-            this.ctrlShift = true;
-        }
+        this.ctrlShift = (e.ctrlKey && e.shiftKey);
     };
     
     TrackView.prototype.onKeyUp = function(e)
     {
-        if (!e.ctrlKey || !e.shiftKey)
-        {
-            this.ctrlShift = false;
-        }
+        this.ctrlShift = (e.ctrlKey && e.shiftKey);
     };
     
     return TrackView;
