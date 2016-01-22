@@ -21,10 +21,8 @@ var MessageOverlay = (function()
         this.addMessage('LFS Remote Spectator');
         
         this.keyPressFn = HtmlRemote.bind(this.onKeyPress, this);
-        this.keyUpFn = HtmlRemote.bind(this.onKeyUp, this);
         
         HtmlRemote.addEvent(document, 'keypress', this.keyPressFn);
-        HtmlRemote.addEvent(document, 'keyup', this.keyUpFn);
     }
     
     MessageOverlay.prototype.destroy = function()
@@ -139,11 +137,6 @@ var MessageOverlay = (function()
                 this.draw();
                 break;
         }
-    };
-    
-    MessageOverlay.prototype.onKeyUp = function(e)
-    {
-        this.ctrlShift = (e.ctrlKey && e.shiftKey);
     };
     
     return MessageOverlay;
