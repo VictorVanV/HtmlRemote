@@ -1,5 +1,7 @@
 "use strict";
 
+Math.DEGRAD = Math.PI / 180;
+
 var HtmlRemote = (function()
 {
     var MAX_RECON_COUNT = 10;

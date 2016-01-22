@@ -133,8 +133,6 @@ var LfsPath = (function()
             drx2 = drx;
             dry2 = dry;
         }
-        
-        console.log('Path generated');
     };
     
     return LfsPath;

@@ -73,7 +73,7 @@ var LfsHost = (function()
         p.carName           = pkt.cname;
         p.skinName          = pkt.sname;
         p.tyres             = pkt.tyres;
-        p.inPits            = false;
+        p.inPits            = ((p.flags & IS.PIF_INPITS) > 0);
     };
     
     LfsHost.prototype.playerPit = function(pkt)
@@ -98,10 +98,20 @@ var LfsHost = (function()
         {
             p = this.players[pkt.info[a].plid];
             if (!p) { continue; }
-            p.pos[0] = pkt.info[a].x / 65536;
-            p.pos[1] = pkt.info[a].y / -65536;
-            p.pos[2] = pkt.info[a].z / 65536;
-            p.racePos = pkt.info[a].position;
+            p.pos[0]    = pkt.info[a].x / 65536;
+            p.pos[1]    = pkt.info[a].y / -65536;
+            p.pos[2]    = pkt.info[a].z / 65536;
+            p.node      = pkt.info[a].node;
+            p.lap       = pkt.info[a].lap;
+            p.racePos   = pkt.info[a].position;
+            p.info      = pkt.info[a].info;
+            p.speed     = pkt.info[a].speed / 327.68;
+            p.direction = pkt.info[a].direction / 180 * Math.DEGRAD - Math.PI;
+            p.heading   = pkt.info[a].heading / 180 * Math.DEGRAD - Math.PI;
+            p.angVel    = pkt.info[a].angvel / 360 * Math.DEGRAD;
+            //console.log(p.angVel);
+
+            p.lastMciUpdate = new Date().getTime();
         }
     };
     
