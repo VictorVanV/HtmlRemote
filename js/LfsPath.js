@@ -64,8 +64,6 @@ var LfsPath = (function()
             n.driveRight    = dView.getFloat32(offset, true);           offset += 4;
             this.nodes.push(n);
         }
-        
-        console.log(dView.byteLength, this);
     };
     
     LfsPath.prototype.generate = function(cv, zoom)

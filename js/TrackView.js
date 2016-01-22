@@ -103,6 +103,8 @@ var TrackView = (function()
     
     TrackView.prototype.loadPth = function(track)
     {
+        if (track.slice(-1) == 'Y' || track.slice(-1) == 'X') { return; }
+        
         var rq = new DataRequest(track, 'http://img.lfs.net/remote/pth/' + track + '.pth');
         rq.responseType = 'arraybuffer';
         rq.responseCallback = HtmlRemote.bind(this.pathLoadFn, this);
@@ -180,8 +182,7 @@ var TrackView = (function()
                 if (pos[0] === 0 && pos[1] === 0) { continue; }
                 
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
-                this.ctx.fillRect(pos[0] - 2, pos[1] - 2,
-                                  4, 4);
+                this.ctx.fillRect(pos[0] - 2, pos[1] - 2, 4, 4);
                 
                 t = '';
                 this.ctx.font = (14 / this.zoom) + 'px Arial';

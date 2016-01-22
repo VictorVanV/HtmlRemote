@@ -2,9 +2,9 @@
 
 var MessageOverlay = (function()
 {
-    var a, s, div;
-    
-    var MAX_NUM_MSGS = 15;
+    var a, i, s, t, div;
+    var MAX_NUM_MSGS = 15,
+        MSG_TIMOUT = 4000;
     
     function MessageOverlay(container)
     {
@@ -14,13 +14,22 @@ var MessageOverlay = (function()
         this.div = document.createElement('div');
         this.div.className = 'messagesOvl';
         
+        this.container.appendChild(this.div);
+        this.timer = setInterval(HtmlRemote.bind(this.draw, this), 500);
+
+        this.autoHide = true;
         this.addMessage('LFS Remote Spectator');
         
-        this.container.appendChild(this.div);
+        this.keyPressFn = HtmlRemote.bind(this.onKeyPress, this);
+        this.keyUpFn = HtmlRemote.bind(this.onKeyUp, this);
+        
+        HtmlRemote.addEvent(document, 'keypress', this.keyPressFn);
+        HtmlRemote.addEvent(document, 'keyup', this.keyUpFn);
     }
     
     MessageOverlay.prototype.destroy = function()
     {
+        clearInterval(this.timer);
         this.container.removeChild(this.div);
         this.container = null;
     };
@@ -77,6 +86,8 @@ var MessageOverlay = (function()
     
     MessageOverlay.prototype.draw = function()
     {
+        i = -1;
+        t = new Date().getTime();
         s = Math.max(0, this.messages.length - MAX_NUM_MSGS);
         for (a = s - 1; a >= 0; a--)
         {
@@ -85,11 +96,54 @@ var MessageOverlay = (function()
             }
             this.messages.splice(a, 1);
         }
-        for (a = s; a < this.messages.length; a++)
+        for (a = 0; a < this.messages.length; a++)
         {
-            this.div.appendChild(this.messages[a]);
-            this.messages[a].drawn = true;
+            if (this.autoHide &&
+                this.messages[a].timestamp < t - MSG_TIMOUT)
+            {
+                if (this.messages[a].drawn)
+                {
+                    this.div.removeChild(this.messages[a]);
+                    this.messages[a].drawn = false;
+                }
+            }
+            else if (!this.messages[a].drawn)
+            {
+                if (i > -1) {
+                    if (this.messages[i].nextSibling) {
+                        this.div.insertBefore(this.messages[a], this.messages[i].nextSibling);
+                    } else {
+                        this.div.appendChild(this.messages[a]);
+                    }
+                } else if (this.div.firstChild) {
+                    this.div.insertBefore(this.messages[a], this.div.firstChild);
+                } else {
+                    this.div.appendChild(this.messages[a]);
+                }
+                this.messages[a].drawn = true;
+            }
+            if (this.messages[a].drawn) {
+                i++;
+            }
         }
+    };
+    
+    MessageOverlay.prototype.onKeyPress = function(e)
+    {
+        // Check for mouse focus?
+        
+        switch (e.charCode)
+        {
+            case 104:
+                this.autoHide = !this.autoHide;
+                this.draw();
+                break;
+        }
+    };
+    
+    MessageOverlay.prototype.onKeyUp = function(e)
+    {
+        this.ctrlShift = (e.ctrlKey && e.shiftKey);
     };
     
     return MessageOverlay;
