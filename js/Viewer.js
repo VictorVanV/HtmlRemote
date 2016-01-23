@@ -77,8 +77,11 @@ var Viewer = (function()
     
     Viewer.prototype.startAnimation = function()
     {
-        window.requestAnimationFrame(this.tickFn);
-        this.running = true;
+        if (!this.running)
+        {
+            window.requestAnimationFrame(this.tickFn);
+            this.running = true;
+        }
     };
     
     Viewer.prototype.stopAnimation = function()

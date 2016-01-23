@@ -50,6 +50,25 @@ var LfsHost = (function()
         this.numConns--;
     };
     
+    LfsHost.prototype.playerRename = function(pkt)
+    {
+        this.conns[pkt.ucId].playerName = pkt.pname;
+        
+        for (a = 0; a < this.players.length; a++)
+        {
+            p = this.players[a];
+            if (!p || p.ucId !=  pkt.ucid) { continue; }
+            if ((p.playerType & 2) > 0) { continue; }   // ai
+            
+            p.playerName        = pkt.pname;
+            p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
+            p.plateName         = pkt.plate;
+            
+            // There can only be one human racer per ucId, so we can break
+            break;
+        }
+    };
+    
     LfsHost.prototype.playerNew = function(pkt)
     {
         if (!this.players[pkt.plid])
@@ -90,6 +109,16 @@ var LfsHost = (function()
         this.players[pkt.plid].destroy();
         delete this.players[pkt.plid];
         this.numPlayers--;
+    };
+    
+    LfsHost.prototype.playerTakeOver = function(pkt)
+    {
+        console.log('Player take over', pkt);
+        
+        p = this.players[pkt.plid];
+        p.userName          = this.conns[pkt.newucid].userName;
+        p.playerName        = this.conns[pkt.newucid].playerName;
+        p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(p.playerName));
     };
     
     LfsHost.prototype.processMci = function(pkt)

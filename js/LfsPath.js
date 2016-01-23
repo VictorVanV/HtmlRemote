@@ -6,22 +6,46 @@ var LfsPath = (function()
     
     function LfsPath()
     {
-        this.version    = 0;
-        this.revision   = 0;
-        this.numNodes   = 0;
-        this.finishLine = 0;
-        this.nodes      = [];
+        this.pathName       = '';
+        this.version        = 0;
+        this.revision       = 0;
+        this.numNodes       = 0;
+        this.finishLine     = 0;
+        this.nodes          = [];
+        this.onLoad         = null;
     }
     
     LfsPath.prototype.destroy = function()
     {
-        this.nodes.length = 0;
+        this.pathName       = '';
+        this.version        = 0;
+        this.revision       = 0;
+        this.numNodes       = 0;
+        this.finishLine     = 0;
+        this.nodes.length   = 0;
+        this.onLoad         = null;
     };
     
-    LfsPath.prototype.load = function(pathName)
+    LfsPath.prototype.load = function(track)
     {
-        this.pathName = pathName;
+        this.destroy();
         
+        if (track.slice(-1) == 'Y' || track.slice(-1) == 'X') { return; }
+        
+        this.pathName = track;
+
+        var rq = new DataRequest(track, 'http://img.lfs.net/remote/pth/' + track + '.pth');
+        rq.responseType = 'arraybuffer';
+        rq.responseCallback = HtmlRemote.bind(this.onPathLoaded, this);
+        rq.request();
+    };
+    
+    LfsPath.prototype.onPathLoaded = function(id, dataBuf)
+    {
+        this.parse(dataBuf);
+        if (this.onLoad) {
+            this.onLoad();
+        }
     };
     
     LfsPath.prototype.parse = function(dataBuf)

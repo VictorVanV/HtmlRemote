@@ -35,8 +35,6 @@ var TrackView = (function()
         this.cvMouseWheelFn = HtmlRemote.bind(this.onCvMouseWheel, this);
         this.trackImgLoadFn = HtmlRemote.bind(this.onTrackLoaded, this);
         this.trackImgLoadErrorFn = HtmlRemote.bind(this.onTrackLoadError, this);
-        this.pathLoadFn = HtmlRemote.bind(this.onPathLoaded, this);
-        this.pathLoadErrorFn = HtmlRemote.bind(this.onPathLoadError, this);
         this.keyDownFn = HtmlRemote.bind(this.onKeyDown, this);
         this.keyUpFn = HtmlRemote.bind(this.onKeyUp, this);
 
@@ -103,28 +101,16 @@ var TrackView = (function()
     
     TrackView.prototype.loadPth = function(track)
     {
-        if (track.slice(-1) == 'Y' || track.slice(-1) == 'X') { return; }
-        
-        var rq = new DataRequest(track, 'http://img.lfs.net/remote/pth/' + track + '.pth');
-        rq.responseType = 'arraybuffer';
-        rq.responseCallback = HtmlRemote.bind(this.pathLoadFn, this);
-        rq.request();
-        
-        this.path.destroy();
+        this.path.load(track);
+        this.path.onLoad = HtmlRemote.bind(this.onPathLoaded, this);
     };
     
-    TrackView.prototype.onPathLoaded = function(id, dataBuf)
+    TrackView.prototype.onPathLoaded = function()
     {
-        this.path.parse(dataBuf);
-        
+        this.path.onLoad = null;
         this.pathCv.width = 2560 * this.zoom;
         this.pathCv.height = 2560 * this.zoom;
         this.path.generate(this.pathCv, this.zoom);
-    };
-    
-    TrackView.prototype.onPathLoadError = function(e)
-    {
-        console.log('Error loading track path', e);
     };
     
     TrackView.prototype.setTrackBg = function()
@@ -180,7 +166,7 @@ var TrackView = (function()
                 if (!ply || ply.inPits) { continue; }
                 pos = ply.getPos(time);
                 if (pos[0] === 0 && pos[1] === 0) { continue; }
-                
+
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
                 this.ctx.fillRect(pos[0] - 2, pos[1] - 2, 4, 4);
                 

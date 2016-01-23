@@ -128,27 +128,12 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_STA:
-                //console.log('STA', pkt);
-                
-                // pkt.flags
-                // pkt.numconns
-                // pkt.nump
-                // pkt.numfinished
-                // pkt.racelaps
-                // pkt.qualmins
-                
-                // Request connections?
+                // Request connections and players?
                 if (this.lfsHost.numConns != pkt.numconns)
                 {
                     p = new IS.IS_TINY();
                     p.subt = IS.TINY_NCN;
                     this.wsInsim.send(p.pack());
-//                }
-//                
-//                // Request players?
-//                if (this.lfsHost.numPlayers != pkt.nump)
-//                {
-//                    p = new IS.IS_TINY();
                     p.subt = IS.TINY_NPL;
                     this.wsInsim.send(p.pack());
                 }
@@ -181,7 +166,7 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_CPR:
-                //console.log('CPR', pkt);
+                this.lfsHost.playerRename(pkt);
                 break;
             
             case IS.ISP_NPL:
@@ -194,6 +179,10 @@ var HtmlRemote = (function()
             
             case IS.ISP_PLL:
                 this.lfsHost.playerLeave(pkt);
+                break;
+            
+            case IS.ISP_TOC:
+                this.lfsHost.playerTakeOver(pkt);
                 break;
             
             case IS.ISP_LAP:
