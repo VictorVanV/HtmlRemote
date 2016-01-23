@@ -2,7 +2,7 @@
 
 var TrackView = (function()
 {
-    var a, t, p = [0, 0], ply, pos;
+    var a, d, h, t, p = [0, 0], ply, pos;
     
     function TrackView(container)
     {
@@ -23,6 +23,7 @@ var TrackView = (function()
         this.trackCol = 'rgb(100, 100, 100)';
         this.trackPos = [this.div.width * 0.5 + 0.5, this.div.height * 0.5 + 0.5];
         this.trackPosB = [0, 0];
+        this.trackRotation = 0;
         this.path = new LfsPath();
         this.pathCv = document.createElement('canvas');
         this.players = null;
@@ -152,27 +153,40 @@ var TrackView = (function()
         this.ctx.fillStyle = this.trackCol;
         this.ctx.fillRect(0, 0, this.div.width, this.div.height);
         
+        // Whole track rotation
+        this.ctx.translate(this.div.width / 2, this.div.height / 2);
+        this.ctx.rotate(this.trackRotation);
+        this.ctx.translate(-this.div.width / 2, -this.div.height / 2);
+        
+        // Track position
         this.ctx.translate(this.trackPos[0], this.trackPos[1]);
         this.ctx.scale(this.zoom, this.zoom);
         
+        // Draw track + path
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
         this.ctx.drawImage(this.pathCv, -1280, -1280, 2560, 2560);
         
+        // Draw player / cars
         if (this.players)
         {
+            d = new Date().getTime();
             for (a = 0; a < this.players.length; a++)
             {
                 ply = this.players[a];
                 if (!ply || ply.inPits) { continue; }
-                pos = ply.getPos(time);
+                pos = ply.getPos(d);
                 if (pos[0] === 0 && pos[1] === 0) { continue; }
+                h = ply.getHeading(d);
 
+                this.ctx.save();
+                this.ctx.translate(pos[0], pos[1]);
+                this.ctx.rotate(h);
+                this.ctx.translate(-pos[0], -pos[1]);
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
                 this.ctx.fillRect(pos[0] - 2, pos[1] - 2, 4, 4);
+                this.ctx.restore();
                 
                 t = '';
-                this.ctx.font = (14 / this.zoom) + 'px Arial';
-                this.ctx.fillStyle = 'black';
                 if (this.showRacePos) {
                     t += ply.racePos + '. ';
                 }
@@ -182,7 +196,14 @@ var TrackView = (function()
                     t += ply.playerNameUcs2;
                 }
 
+                this.ctx.save();
+                this.ctx.translate(pos[0], pos[1]);
+                this.ctx.rotate(-this.trackRotation);
+                this.ctx.translate(-pos[0], -pos[1]);
+                this.ctx.font = (14 / this.zoom) + 'px Arial';
+                this.ctx.fillStyle = 'black';
                 this.ctx.fillText(t, pos[0], pos[1]);
+                this.ctx.restore();
             }
         }
         
@@ -210,8 +231,17 @@ var TrackView = (function()
     {
         p[0] = e.clientX - this.sPos[0];
         p[1] = e.clientY - this.sPos[1];
-        this.trackPos[0] = this.trackPosB[0] + p[0];
-        this.trackPos[1] = this.trackPosB[1] + p[1];
+        if (e.ctrlKey)
+        {
+            this.trackRotation -= p[0] / 360;
+            this.sPos[0] = e.clientX;
+            this.sPos[1] = e.clientY;
+        }
+        else
+        {
+            this.trackPos[0] = this.trackPosB[0] + (p[0] * Math.cos(-this.trackRotation) - p[1] * Math.sin(-this.trackRotation));
+            this.trackPos[1] = this.trackPosB[1] + (p[0] * Math.sin(-this.trackRotation) + p[1] * Math.cos(-this.trackRotation));
+        }
     };
     
     TrackView.prototype.onCvMouseWheel = function(e)

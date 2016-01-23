@@ -26,9 +26,13 @@ var LfsPlayer = (function()
         this.info           = 0;
         this.speed          = 0;
         this.direction      = 0;
-        this.heading        = 0;
+        this.fromHeading    = 0;
+        this.toHeading      = 0;
+        this.revs           = 0;
         this.angVel         = 0;
-        this.pos            = [0, 0, 0];
+        
+        this.fromPos        = [0, 0, 0];
+        this.toPos          = [0, 0, 0];
     }
     
     LfsPlayer.prototype.destroy = function()
@@ -38,19 +42,19 @@ var LfsPlayer = (function()
     
     LfsPlayer.prototype.getPos = function(time)
     {
-        t = new Date().getTime();
-        d = (t - this.lastMciUpdate) * 0.001;
-        p[0] = this.pos[0] + this.speed * d * Math.sin(this.direction);
-        p[1] = this.pos[1] + this.speed * d * Math.cos(this.direction);
-        
-        //this.lastMciUpdate = time;
-        
-        return [p[0], p[1]];
+        if (this.fromPos[0] == 0 &&
+            this.fromPos[1] == 0 &&
+            this.fromPos[2] == 0) { return [this.toPos[0], this.toPos[1], this.toPos[2]]; }
+        d = (time - this.lastMciUpdate) * 0.002;
+        return [this.fromPos[0] + (this.toPos[0] - this.fromPos[0]) * d,
+                this.fromPos[1] + (this.toPos[1] - this.fromPos[1]) * d,
+                this.fromPos[2] + (this.toPos[2] - this.fromPos[2]) * d];
     };
     
-    LfsPlayer.prototype.getPos3d = function(time)
+    LfsPlayer.prototype.getHeading = function(time)
     {
-        return [this.pos[0], this.pos[1], this.pos[2]];
+        d = (time - this.lastMciUpdate) * 0.002;
+        return this.fromHeading + (this.toHeading - this.fromHeading) * d;
     };
     
     return LfsPlayer;

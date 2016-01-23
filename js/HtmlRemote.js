@@ -1,5 +1,6 @@
 "use strict";
 
+Math.PI2 = Math.PI * 2;
 Math.DEGRAD = Math.PI / 180;
 
 var HtmlRemote = (function()
