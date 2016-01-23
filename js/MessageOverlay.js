@@ -121,7 +121,7 @@ var MessageOverlay = (function()
                 this.messages[a].drawn = true;
             }
             if (this.messages[a].drawn) {
-                i++;
+                i = a;
             }
         }
     };

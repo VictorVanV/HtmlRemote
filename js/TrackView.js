@@ -182,7 +182,7 @@ var TrackView = (function()
                     t += ply.playerNameUcs2;
                 }
 
-                this.ctx.fillText(t + '. ', pos[0], pos[1]);
+                this.ctx.fillText(t, pos[0], pos[1]);
             }
         }
         
