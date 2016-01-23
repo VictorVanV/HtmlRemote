@@ -61,7 +61,7 @@ var LfsHost = (function()
             if ((p.playerType & 2) > 0) { continue; }   // ai
             
             p.playerName        = pkt.pname;
-            p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
+            p.playerNameUcs2    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
             p.plateName         = pkt.plate;
             
             // There can only be one human racer per ucId, so we can break
@@ -85,7 +85,7 @@ var LfsHost = (function()
         p.ucId              = pkt.ucid;
         p.userName          = this.conns[pkt.ucid].userName;
         p.playerName        = pkt.pname;
-        p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
+        p.playerNameUcs2    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
         p.plateName         = pkt.plate;
         p.ptype             = pkt.ptype;
         p.flags             = pkt.flags;
@@ -113,12 +113,11 @@ var LfsHost = (function()
     
     LfsHost.prototype.playerTakeOver = function(pkt)
     {
-        console.log('Player take over', pkt);
-        
         p = this.players[pkt.plid];
+        p.ucId              = pkt.newucid;
         p.userName          = this.conns[pkt.newucid].userName;
         p.playerName        = this.conns[pkt.newucid].playerName;
-        p.playerNameUtf8    = LfsString.toUCS2(LfsString.remColours(p.playerName));
+        p.playerNameUcs2    = LfsString.toUCS2(LfsString.remColours(p.playerName));
     };
     
     LfsHost.prototype.processMci = function(pkt)

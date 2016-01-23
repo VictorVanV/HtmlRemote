@@ -179,7 +179,7 @@ var TrackView = (function()
                 if (this.ctrlShift) {
                     t += ply.userName;
                 } else {
-                    t += ply.playerNameUtf8;
+                    t += ply.playerNameUcs2;
                 }
 
                 this.ctx.fillText(t + '. ', pos[0], pos[1]);
