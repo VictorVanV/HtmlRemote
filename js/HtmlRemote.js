@@ -146,7 +146,7 @@ var HtmlRemote = (function()
                 {
                     this.lfsHost = new LfsHost();
                     this.viewer.trackView.players = this.lfsHost.players;
-                    this.viewer.playerView.players = this.lfsHost.players;
+                    this.viewer.playerView.setPlayers(this.lfsHost.players);
                 }
                 
                 break;

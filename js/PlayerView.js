@@ -32,13 +32,41 @@ var PlayerView = (function()
     
     PlayerView.prototype.destroy = function()
     {
+        this.players.length = 0;
         
+        for (a = 0; a < this.playerRows.length; a++)
+        {
+            if (this.playerRows[a])
+            {
+                this.destroyPlayer(a);
+            }
+        }
+        this.playerRows.length = 0;
+        
+        this.keyDownFn = null;
+        this.keyUpFn = null;
+        
+        HtmlRemote.removeEvent(document, 'keydown', this.keyDownFn);
+        HtmlRemote.removeEvent(document, 'keyup', this.keyUpFn);
     };
     
     PlayerView.prototype.destroyPlayer = function(a)
     {
         this.div.removeChild(this.playerRows[a]);
         this.playerRows[a] = null;
+    };
+    
+    PlayerView.prototype.setPlayers = function(players)
+    {
+        this.players = players;
+        for (a = 0; a < this.playerRows.length; a++)
+        {
+            if (this.playerRows[a])
+            {
+                this.destroyPlayer(a);
+            }
+        }
+        this.playerRows.length = 0;
     };
     
     PlayerView.prototype.createPlayer = function(a)
