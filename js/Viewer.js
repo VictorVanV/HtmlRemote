@@ -10,8 +10,12 @@ var Viewer = (function()
         this.trackView = new TrackView(this.container);
         //this.statusOverlay = new StatusOverlay(this.container);
         this.messageOvl = new MessageOverlay(this.container);
-        this.hostView = new HostView(this.container);
+        
+        this.hostView = null;
+        this.onHostNameClick = null;
+        
         this.racerView = new RacerView(this.container);
+        
         this.hostListOverlay = null;
         this.onHostSelect = null;
         
@@ -31,6 +35,7 @@ var Viewer = (function()
         this.statusOverlay.destroy();
         this.statusOverlay = null;
         this.onHostSelect = null;
+        this.onHostNameClick = null;
     };
     
     Viewer.prototype.handleWinResize = function(e)
@@ -73,6 +78,14 @@ var Viewer = (function()
         {
             this.onHostSelect(hostInfo);
         }
+        
+        if (!this.hostView)
+        {
+            this.hostView = new HostView(this.container);
+            this.hostView.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
+        }
+        this.hostView.hostNameDiv.innerHTML = LfsString.toUCS2(LfsString.remColours(hostInfo.hname));
+        this.hostView.trackNameDiv.innerHTML = hostInfo.track;
     };
     
     Viewer.prototype.startAnimation = function()
@@ -93,9 +106,21 @@ var Viewer = (function()
     Viewer.prototype.tick = function(t)
     {
         this.trackView.draw(t);
+        if (this.hostView)
+        {
+            this.hostView.drawTime(t);
+        }
         
         if (this.running) {
             window.requestAnimationFrame(this.tickFn);
+        }
+    };
+    
+    Viewer.prototype.handleHostNameClick = function(e)
+    {
+        if (this.onHostNameClick)
+        {
+            this.onHostNameClick(e);
         }
     };
     

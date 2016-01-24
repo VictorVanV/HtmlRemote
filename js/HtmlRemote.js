@@ -7,7 +7,7 @@ var HtmlRemote = (function()
 {
     var MAX_RECON_COUNT = 10;
     
-    var a, p, pkt;
+    var a, p, pkt, secs, mins, hours;
     
     function HtmlRemote(div)
     {
@@ -33,6 +33,7 @@ var HtmlRemote = (function()
         // All visuals go in the Viewer
         this.viewer = new Viewer(div);
         this.viewer.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
+        this.viewer.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
 
         this.hostListData = null;
         this.curLfsHost = '';
@@ -86,6 +87,13 @@ var HtmlRemote = (function()
     {
         switch (pkt.type)
         {
+            case IS.ISP_SMALL:
+                if (pkt.subt == IS.SMALL_RTP)
+                {
+                    this.viewer.hostView.setTime(pkt.uval * 10);
+                }
+                break;
+            
             case IS.IRP_HOS:
                 if (!this.hostListData) { break; }
                 if ((pkt.info[0].flags & IS.HOS_FIRST) > 0)
@@ -113,6 +121,8 @@ var HtmlRemote = (function()
                 p.subt = IS.TINY_ISM;
                 this.wsInsim.send(p.pack());
                 p.subt = IS.TINY_SST;
+                this.wsInsim.send(p.pack());
+                p.subt = IS.TINY_GTH;
                 this.wsInsim.send(p.pack());
 
                 // Init a new lfsHost??
@@ -149,13 +159,16 @@ var HtmlRemote = (function()
                     
                     // Setup the viewer for a new track
                     this.viewer.trackView.loadTrack(pkt.track.slice(0, 2));
-                    this.viewer.trackView.loadPth(pkt.track);
+                    this.viewer.trackView.loadPath(pkt.track);
                 }
+                
+                this.viewer.hostView.setMode(pkt);
                 
                 break;
             
             case IS.ISP_RST:
                 this.lfsHost.raceStart(pkt);
+                this.viewer.hostView.setMode(pkt);
                 break;
             
             case IS.ISP_NCN:
@@ -187,10 +200,12 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_LAP:
+                this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerLap(pkt);
                 break;
             
             case IS.ISP_SPX:
+                this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerSplit(pkt);
                 break;
             
@@ -289,6 +304,11 @@ var HtmlRemote = (function()
         }
     };
     
+    HtmlRemote.prototype.handleHostNameClick = function(e)
+    {
+        this.requestHostlist();
+    };
+    
     HtmlRemote.prototype.start = function()
     {
         this.wsInsim.connect();
@@ -378,6 +398,17 @@ var HtmlRemote = (function()
         }
         
         return txt;
+    };
+    
+    HtmlRemote.ms2Msht = function(ms)
+    {
+        secs = Math.floor(ms * 0.001);
+        ms -= secs * 1000;
+        mins = Math.floor(secs / 60);
+        secs -= mins * 60;
+        hours = Math.floor(mins / 60);
+        mins -= hours * 60;
+        return hours + ':' + ('0' + mins).slice(-2) + ':' + ('0' + secs).slice(-2) + '.' + ('00' + ms).slice(-3);
     };
     
     return HtmlRemote;

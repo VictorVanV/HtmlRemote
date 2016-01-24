@@ -26,6 +26,7 @@ var TrackView = (function()
         this.trackRotation = 0;
         this.path = new LfsPath();
         this.pathCv = document.createElement('canvas');
+        this.showPath = true;
         this.players = null;
         this.showRacePos = true;
         this.ctrlShift = false;
@@ -67,7 +68,9 @@ var TrackView = (function()
     TrackView.prototype.loadTrack = function(track)
     {
         this.trackName = track;
-        this.trackImg = new Image();
+        if (!this.trackImg) {
+            this.trackImg = new Image();
+        }
         this.trackImg.loading = true;
         this.trackImg.trackName = track;
         this.trackImg.src = 'http://img.lfs.net/remote/maps/' + track + '.jpg';
@@ -100,17 +103,18 @@ var TrackView = (function()
         this.trackImg = null;
     };
     
-    TrackView.prototype.loadPth = function(track)
+    TrackView.prototype.loadPath = function(track)
     {
         this.path.load(track);
         this.path.onLoad = HtmlRemote.bind(this.onPathLoaded, this);
+        this.path.clear(this.pathCv);
     };
     
     TrackView.prototype.onPathLoaded = function()
     {
         this.path.onLoad = null;
-        this.pathCv.width = 2560 * this.zoom;
-        this.pathCv.height = 2560 * this.zoom;
+        this.pathCv.width = 2560;
+        this.pathCv.height = 2560;
         this.path.generate(this.pathCv, this.zoom);
     };
     
@@ -164,7 +168,9 @@ var TrackView = (function()
         
         // Draw track + path
         this.ctx.drawImage(this.trackImg, -1280, -1280, 2560, 2560);
-        this.ctx.drawImage(this.pathCv, -1280, -1280, 2560, 2560);
+        if (this.showPath) {
+            this.ctx.drawImage(this.pathCv, -1280, -1280, 2560, 2560);
+        }
         
         // Draw player / cars
         if (this.players)
@@ -289,6 +295,12 @@ var TrackView = (function()
     TrackView.prototype.onKeyDown = function(e)
     {
         this.ctrlShift = (e.ctrlKey && e.shiftKey);
+        switch (e.keyCode)
+        {
+            case 80:
+                this.showPath = !this.showPath;
+                break;
+        }
     };
     
     TrackView.prototype.onKeyUp = function(e)

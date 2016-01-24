@@ -97,6 +97,7 @@ var LfsPath = (function()
             dlx, dly, drx, dry,
             dlx2, dly2, drx2, dry2;
         var ctx = cv.getContext('2d');
+        ctx.save();
         ctx.globalCompositeOperation  = 'lighter';
         
         var leftCos = Math.cos(90 * Math.PI / 180),
@@ -157,6 +158,13 @@ var LfsPath = (function()
             drx2 = drx;
             dry2 = dry;
         }
+        ctx.restore();
+    };
+    
+    LfsPath.prototype.clear = function(cv)
+    {
+        var ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, cv.width, cv.height);
     };
     
     return LfsPath;

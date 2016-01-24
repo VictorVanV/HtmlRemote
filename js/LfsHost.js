@@ -2,7 +2,7 @@
 
 var LfsHost = (function()
 {
-    var a, c, p, id;
+    var a, c, p, t, id;
     
     function LfsHost()
     {
@@ -17,7 +17,7 @@ var LfsHost = (function()
     LfsHost.prototype.destroy = function()
     {
         this.conns.length = 0;
-        this.racers.length = 0;
+        this.players.length = 0;
     };
     
     LfsHost.prototype.connectionNew = function(pkt)
@@ -133,11 +133,22 @@ var LfsHost = (function()
     
     LfsHost.prototype.processMci = function(pkt)
     {
+        t = new Date().getTime();
         for (a = 0; a < pkt.info.length; a++)
         {
             p = this.players[pkt.info[a].plid];
             if (!p || p.inPits) { continue; }
             
+            if (t - p.lastMciUpdate > 500)
+            {
+                p.fromPos   = p.getPos(t);
+            }
+            else
+            {
+                p.fromPos[0]    = p.toPos[0];
+                p.fromPos[1]    = p.toPos[1];
+                p.fromPos[2]    = p.toPos[2];
+            }
             p.fromPos[0]    = p.toPos[0];
             p.fromPos[1]    = p.toPos[1];
             p.fromPos[2]    = p.toPos[2];
@@ -159,17 +170,17 @@ var LfsHost = (function()
             {
                 if (p.fromHeading - p.toHeading > Math.PI)
                 {
-                    this.revs++;
+                    p.revs++;
                     p.toHeading += Math.PI2;
                 }
                 else if (p.toHeading - p.fromHeading > Math.PI)
                 {
-                    this.revs--;
+                    p.revs--;
                     p.toHeading -= Math.PI2;
                 }
             }
 
-            p.lastMciUpdate = new Date().getTime();
+            p.lastMciUpdate = t;
         }
     };
     

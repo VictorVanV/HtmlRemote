@@ -20,7 +20,10 @@
     -o-transition : all 100ms linear;
     transition : all 100ms linear;
 }
-
+.hrBtn.inline
+{
+    float: left;
+}
 .hrBtn.dark
 {
     background-color: #909090;
@@ -54,14 +57,14 @@
 .hostView
 {
     position: absolute;
-    top: 0;
+    top: 1px;
     right: 0;
 }
 
 .racerView
 {
     position: absolute;
-    top: 40px;
+    top: 28px;
     right: 0;
 }
 

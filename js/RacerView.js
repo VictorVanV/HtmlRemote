@@ -7,7 +7,12 @@ var RacerView = (function()
         this.container = container;
         this.div = document.createElement('div');
         this.div.className = 'racerView';
-        this.div.innerHTML = 'racer view here';
+        
+        this.testDiv = document.createElement('div');
+        this.testDiv.className = 'hrBtn inline';
+        this.testDiv.innerHTML = 'test div';
+        this.div.appendChild(this.testDiv);
+        
 
         this.container.appendChild(this.div);
     }
