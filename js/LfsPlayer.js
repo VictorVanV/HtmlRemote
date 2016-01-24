@@ -21,7 +21,9 @@ var LfsPlayer = (function()
         
         this.lastMciUpdate  = new Date().getTime();
         this.node           = 0;
+        this.sector         = 0;
         this.lap            = 0;
+        this.lapData        = [];
         this.racePos        = 0;
         this.info           = 0;
         this.speed          = 0;
@@ -38,6 +40,7 @@ var LfsPlayer = (function()
     LfsPlayer.prototype.destroy = function()
     {
         this.tyres = null;
+        this.lapData.length = 0;
     };
     
     LfsPlayer.prototype.getPos = function(time)
@@ -58,4 +61,18 @@ var LfsPlayer = (function()
     };
     
     return LfsPlayer;
+})();
+
+var LfsLapData = (function()
+{
+    function LfsLapData()
+    {
+        this.split1 = 0;
+        this.split2 = 0;
+        this.split3 = 0;
+        this.lap    = 0;
+        this.lapNum = 0;
+    }
+    
+    return LfsLapData;
 })();

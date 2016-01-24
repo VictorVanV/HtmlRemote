@@ -155,7 +155,7 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_RST:
-                //console.log('RST', pkt);
+                this.lfsHost.raceStart(pkt);
                 break;
             
             case IS.ISP_NCN:
@@ -187,11 +187,11 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_LAP:
-                //console.log('LAP', pkt);
+                this.lfsHost.playerLap(pkt);
                 break;
             
             case IS.ISP_SPX:
-                //console.log('SPX', pkt);
+                this.lfsHost.playerSplit(pkt);
                 break;
             
             case IS.ISP_MCI:

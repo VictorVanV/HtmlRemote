@@ -97,7 +97,18 @@ var LfsHost = (function()
     
     LfsHost.prototype.playerPit = function(pkt)
     {
-        this.players[pkt.plid].inPits = true;
+        p = this.players[pkt.plid];
+        p.inPits = true;
+        p.fromPos[0] = 0;
+        p.fromPos[1] = 0;
+        p.fromPos[2] = 0;
+        p.toPos[0] = 0;
+        p.toPos[1] = 0;
+        p.toPos[2] = 0;
+        p.lap = 1;
+        p.sector = 1;
+        p.lapData.length = 0;
+        p.speed = 0;
     };
     
     LfsHost.prototype.playerLeave = function(pkt)
@@ -125,15 +136,14 @@ var LfsHost = (function()
         for (a = 0; a < pkt.info.length; a++)
         {
             p = this.players[pkt.info[a].plid];
-            if (!p) { continue; }
+            if (!p || p.inPits) { continue; }
             
-            //p.fromPos   = p.getPos();
-            p.fromPos[0]   = p.toPos[0];
-            p.fromPos[1]   = p.toPos[1];
-            p.fromPos[2]   = p.toPos[2];
-            p.toPos[0]  = pkt.info[a].x / 65536;
-            p.toPos[1]  = pkt.info[a].y / -65536;
-            p.toPos[2]  = pkt.info[a].z / 65536;
+            p.fromPos[0]    = p.toPos[0];
+            p.fromPos[1]    = p.toPos[1];
+            p.fromPos[2]    = p.toPos[2];
+            p.toPos[0]      = pkt.info[a].x / 65536;
+            p.toPos[1]      = pkt.info[a].y / -65536;
+            p.toPos[2]      = pkt.info[a].z / 65536;
             
             p.node      = pkt.info[a].node;
             p.lap       = pkt.info[a].lap;
@@ -144,7 +154,7 @@ var LfsHost = (function()
 //            p.angVel    = -pkt.info[a].angvel / 45 * Math.DEGRAD;
 
             p.fromHeading   = p.toHeading;
-            p.toHeading     = -pkt.info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;
+            p.toHeading     = pkt.info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;
             if (p.fromHeading)
             {
                 if (p.fromHeading - p.toHeading > Math.PI)
@@ -158,10 +168,59 @@ var LfsHost = (function()
                     p.toHeading -= Math.PI2;
                 }
             }
-            //console.log(pkt.info[a].angvel, p.angVel);
 
             p.lastMciUpdate = new Date().getTime();
         }
+    };
+    
+    LfsHost.prototype.raceStart = function(pkt)
+    {
+        for (a = 0; a < this.players.length; a++)
+        {
+            p = this.players[a];
+            if (!p) { continue; }
+            
+            p.fromPos[0] = 0;
+            p.fromPos[1] = 0;
+            p.fromPos[2] = 0;
+            p.toPos[0] = 0;
+            p.toPos[1] = 0;
+            p.toPos[2] = 0;
+            
+            p.lap = 1;
+            p.sector = 1;
+            p.lapData.length = 0;
+            p.racePos = 0;
+            p.speed = 0;
+        }
+    };
+    
+    LfsHost.prototype.playerSplit = function(pkt)
+    {
+        p = this.players[pkt.plid];
+        if (!p.lapData.length)
+        {
+            p.lapData.push(new LfsLapData());
+        }
+        a = p.lapData[p.lapData.length - 1];
+        a['split' + pkt.split] = pkt.stime;
+        p.sector = pkt.split + 1;
+    };
+    
+    LfsHost.prototype.playerLap = function(pkt)
+    {
+        p = this.players[pkt.plid];
+        if (!p.lapData.length)
+        {
+            p.lapData.push(new LfsLapData());
+        }
+        a = p.lapData[p.lapData.length - 1];
+        a.lap = pkt.ltime;
+        a.lapNum = pkt.lapsdone;
+        
+        p.lap = pkt.lapsdone + 1;
+        p.sector = 1;
+        p.lapData.push(new LfsLapData());
     };
     
     return LfsHost;

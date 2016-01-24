@@ -176,7 +176,7 @@ var TrackView = (function()
                 if (!ply || ply.inPits) { continue; }
                 pos = ply.getPos(d);
                 if (pos[0] === 0 && pos[1] === 0) { continue; }
-                h = ply.getHeading(d);
+                h = -ply.getHeading(d);
 
                 this.ctx.save();
                 this.ctx.translate(pos[0], pos[1]);
