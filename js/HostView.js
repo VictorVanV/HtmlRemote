@@ -31,7 +31,7 @@ var HostView = (function()
         this.timeDiv.style.width = '70px';
         this.timeDiv.style.textAlign = 'center';
         this.div.appendChild(this.timeDiv);
-
+        
         this.container.appendChild(this.div);
     }
     
@@ -46,6 +46,11 @@ var HostView = (function()
         {
             this.onHostNameClick(e);
         }
+    };
+    
+    HostView.prototype.setLobby = function()
+    {
+        this.modeDiv.innerHTML = 'Lobby';
     };
     
     HostView.prototype.setMode = function(pkt)

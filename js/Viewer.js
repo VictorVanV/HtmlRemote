@@ -14,7 +14,7 @@ var Viewer = (function()
         this.hostView = null;
         this.onHostNameClick = null;
         
-        this.racerView = new RacerView(this.container);
+        this.playerView = new PlayerView(this.container);
         
         this.hostListOverlay = null;
         this.onHostSelect = null;

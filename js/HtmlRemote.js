@@ -87,6 +87,22 @@ var HtmlRemote = (function()
     {
         switch (pkt.type)
         {
+            case IS.ISP_TINY:
+                switch (pkt.subt)
+                {
+                    case IS.TINY_CLR:
+                        console.log('Removed all players from race');
+                        this.lfsHost.players.length = 0;
+                        this.lfsHost.numPlayers = 0;
+                        break;
+                    
+                    case IS.TINY_REN:
+                        console.log('Race ending - returning to lobby');
+                        this.viewer.hostView.setLobby();
+                        break;
+                }
+                break;
+            
             case IS.ISP_SMALL:
                 if (pkt.subt == IS.SMALL_RTP)
                 {
@@ -130,6 +146,7 @@ var HtmlRemote = (function()
                 {
                     this.lfsHost = new LfsHost();
                     this.viewer.trackView.players = this.lfsHost.players;
+                    this.viewer.playerView.players = this.lfsHost.players;
                 }
                 
                 break;
@@ -162,55 +179,72 @@ var HtmlRemote = (function()
                     this.viewer.trackView.loadPath(pkt.track);
                 }
                 
-                this.viewer.hostView.setMode(pkt);
+                if (pkt.raceinprog) {
+                    this.viewer.hostView.setMode(pkt);
+                } else {
+                    this.viewer.hostView.setLobby();
+                }
+                
+                this.viewer.playerView.draw();
                 
                 break;
             
             case IS.ISP_RST:
                 this.lfsHost.raceStart(pkt);
                 this.viewer.hostView.setMode(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_NCN:
                 this.lfsHost.connectionNew(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_CNL:
                 this.lfsHost.connectionLeave(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_CPR:
                 this.lfsHost.playerRename(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_NPL:
                 this.lfsHost.playerNew(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_PLP:
                 this.lfsHost.playerPit(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_PLL:
                 this.lfsHost.playerLeave(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_TOC:
                 this.lfsHost.playerTakeOver(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_LAP:
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerLap(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_SPX:
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerSplit(pkt);
+                this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_MCI:
                 this.lfsHost.processMci(pkt);
+                //this.viewer.playerView.draw();
                 break;
             
             case IS.IRP_ARP:
