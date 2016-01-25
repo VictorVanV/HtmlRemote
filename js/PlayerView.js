@@ -2,7 +2,7 @@
 
 var PlayerView = (function()
 {
-    var a, p,
+    var a, b, i, p,
         cell, playerRow, posDiv, nameDiv, carDiv;
     
     function PlayerView(container)
@@ -75,6 +75,7 @@ var PlayerView = (function()
         
         playerRow = document.createElement('tr');
         playerRow.player = p;
+        playerRow.drawn = false;
         
         cell = document.createElement('td');
         posDiv = document.createElement('div');
@@ -119,17 +120,38 @@ var PlayerView = (function()
             {
                 // Create player object
                 this.playerRows[a] = this.createPlayer(a);
-                this.playerRows[a].drawn = true;
-                this.div.appendChild(this.playerRows[a]);
+//                this.playerRows[a].drawn = true;
+//                this.div.appendChild(this.playerRows[a]);
+            }
+            else if (this.playerRows[a].drawn)
+            {
+                this.div.removeChild(this.playerRows[a]);
+                this.playerRows[a].drawn = false;
             }
             
-            this.playerIndices.push(a);
+            i = false;
+            if (p.racePos)
+            {
+                for (b = 0; b < this.playerIndices.length; b++)
+                {
+                    if (p.racePos < this.players[this.playerIndices[b]].racePos ||
+                        !this.players[this.playerIndices[b]].racePos)
+                    {
+                        this.playerIndices.splice(b, 0, a);
+                        i = true;
+                        break;
+                    }
+                }
+            }
+            if (!i) {
+                this.playerIndices.push(a);
+            }
         }
         
         for (a = 0; a < this.playerIndices.length; a++)
         {
             playerRow = this.playerRows[this.playerIndices[a]];
-            if (playerRow.drawn)
+            if (!playerRow.drawn)
             {
                 this.div.appendChild(playerRow);
                 playerRow.drawn = true;

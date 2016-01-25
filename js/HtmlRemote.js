@@ -138,6 +138,8 @@ var HtmlRemote = (function()
                 this.wsInsim.send(p.pack());
                 p.subt = IS.TINY_SST;
                 this.wsInsim.send(p.pack());
+                p.subt = IS.TINY_RST;
+                this.wsInsim.send(p.pack());
                 p.subt = IS.TINY_GTH;
                 this.wsInsim.send(p.pack());
 
@@ -179,8 +181,9 @@ var HtmlRemote = (function()
                     this.viewer.trackView.loadPath(pkt.track);
                 }
                 
-                if (pkt.raceinprog) {
-                    this.viewer.hostView.setMode(pkt);
+                this.lfsHost.raceInProg = pkt.raceinprog;
+                if (this.lfsHost.raceInProg) {
+                    this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
                 } else {
                     this.viewer.hostView.setLobby();
                 }
@@ -191,7 +194,7 @@ var HtmlRemote = (function()
             
             case IS.ISP_RST:
                 this.lfsHost.raceStart(pkt);
-                this.viewer.hostView.setMode(pkt);
+                this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
                 this.viewer.playerView.draw();
                 break;
             
@@ -243,8 +246,9 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_MCI:
-                this.lfsHost.processMci(pkt);
-                //this.viewer.playerView.draw();
+                if (this.lfsHost.processMci(pkt)) {
+                    this.viewer.playerView.draw();
+                }
                 break;
             
             case IS.IRP_ARP:

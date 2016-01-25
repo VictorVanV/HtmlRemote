@@ -53,9 +53,9 @@ var HostView = (function()
         this.modeDiv.innerHTML = 'Lobby';
     };
     
-    HostView.prototype.setMode = function(pkt)
+    HostView.prototype.setMode = function(pkt, raceInProg)
     {
-        if (pkt.qualmins > 0)
+        if (raceInProg == 2 && pkt.qualmins > 0)
         {
             if (pkt.qualmins > 60)
             {
@@ -68,7 +68,7 @@ var HostView = (function()
                 this.modeDiv.innerHTML = 'Qualify ' + pkt.qualmins + ' minute' + (pkt.qualmins == 1 ? '' : 's');
             }
         }
-        else if (pkt.racelaps > 0)
+        else if (raceInProg == 1 && pkt.racelaps > 0)
         {
             if (pkt.racelaps < 100)
             {

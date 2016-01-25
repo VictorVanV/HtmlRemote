@@ -2,7 +2,7 @@
 
 var LfsHost = (function()
 {
-    var a, c, p, t, id;
+    var a, c, p, t, id, racePosChanged;
     
     function LfsHost()
     {
@@ -12,6 +12,8 @@ var LfsHost = (function()
         this.conns = [];
         this.numPlayers = 0;
         this.players = [];
+        
+        this.raceInProg = 0;
     }
     
     LfsHost.prototype.destroy = function()
@@ -133,6 +135,7 @@ var LfsHost = (function()
     
     LfsHost.prototype.processMci = function(pkt)
     {
+        racePosChanged = false;
         t = new Date().getTime();
         for (a = 0; a < pkt.info.length; a++)
         {
@@ -158,6 +161,7 @@ var LfsHost = (function()
             
             p.node      = pkt.info[a].node;
             p.lap       = pkt.info[a].lap;
+            if (!racePosChanged && p.racePos != pkt.info[a].position) { racePosChanged = true; }
             p.racePos   = pkt.info[a].position;
             p.info      = pkt.info[a].info;
             p.speed     = pkt.info[a].speed / 327.68;
@@ -182,6 +186,8 @@ var LfsHost = (function()
 
             p.lastMciUpdate = t;
         }
+        
+        return racePosChanged;
     };
     
     LfsHost.prototype.raceStart = function(pkt)
