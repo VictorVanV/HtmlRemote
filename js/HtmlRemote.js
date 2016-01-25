@@ -34,6 +34,7 @@ var HtmlRemote = (function()
         this.viewer = new Viewer(div);
         this.viewer.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
         this.viewer.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
+        this.viewer.playerView.onPlayerClick = HtmlRemote.bind(this.handlePlayerClick, this);
 
         this.hostListData = null;
         this.curLfsHost = '';
@@ -345,6 +346,11 @@ var HtmlRemote = (function()
     HtmlRemote.prototype.handleHostNameClick = function(e)
     {
         this.requestHostlist();
+    };
+    
+    HtmlRemote.prototype.handlePlayerClick = function(plId)
+    {
+        this.viewer.trackView.followPlayer = this.lfsHost.players[plId];
     };
     
     HtmlRemote.prototype.start = function()

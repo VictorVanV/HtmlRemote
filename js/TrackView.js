@@ -30,6 +30,7 @@ var TrackView = (function()
         this.players = null;
         this.showRacePos = true;
         this.ctrlShift = false;
+        this.followPlayer = null;
 
         this.cvMouseDownFn = HtmlRemote.bind(this.onCvMouseDown, this);
         this.cvMouseUpFn = HtmlRemote.bind(this.onCvMouseUp, this);
@@ -151,6 +152,10 @@ var TrackView = (function()
     
     TrackView.prototype.draw = function(time)
     {
+        d = new Date().getTime();
+        
+        this.setFollowTrackPos(d);
+        
         this.ctx.save();
 
         // Clear screen
@@ -175,7 +180,6 @@ var TrackView = (function()
         // Draw player / cars
         if (this.players)
         {
-            d = new Date().getTime();
             for (a = 0; a < this.players.length; a++)
             {
                 ply = this.players[a];
@@ -214,6 +218,15 @@ var TrackView = (function()
         }
         
         this.ctx.restore();
+    };
+    
+    TrackView.prototype.setFollowTrackPos = function(time)
+    {
+        if (!this.followPlayer) { return; }
+        
+        p = this.followPlayer.getPos(time);
+        this.trackPos[0] = -p[0] * this.zoom + this.div.width * 0.5;
+        this.trackPos[1] = -p[1] * this.zoom + this.div.height * 0.5;
     };
     
     TrackView.prototype.onCvMouseDown = function(e)

@@ -2,18 +2,26 @@
 
 var PlayerView = (function()
 {
-    var a, b, i, p,
+    var a, b, i, p, t,
         cell, playerRow, posDiv, nameDiv, carDiv;
     
     function PlayerView(container)
     {
         this.container = container;
-        this.div = document.createElement('table');
-        this.div.setAttribute('border', '0');
-        this.div.className = 'racerView';
+        this.div = document.createElement('div');
+        this.div.className = 'playerView';
         
-        this.divBody = document.createElement('tbody');
-        this.div.appendChild(this.divBody);
+//        this.playerDiv = document.createElement('div');
+//        this.playerDiv.className = 'playerViewDiv';
+//        this.div.appendChild(this.playerDiv);
+        
+        this.playerTable = document.createElement('table');
+        this.playerTable.className = 'playerViewTable';
+        this.playerTable.setAttribute('border', '0');
+        this.div.appendChild(this.playerTable);
+
+        this.playerBody = document.createElement('tbody');
+        this.playerTable.appendChild(this.playerBody);
         
         this.players = [];
         this.playerIndices = [];
@@ -23,8 +31,11 @@ var PlayerView = (function()
 
         this.ctrlShift = false;
         
+        this.onPlayerClick = null;
+        
         this.keyDownFn = HtmlRemote.bind(this.onKeyDown, this);
         this.keyUpFn = HtmlRemote.bind(this.onKeyUp, this);
+        this.playerClickFn = HtmlRemote.bind(this.handlePlayerClick, this);
         
         HtmlRemote.addEvent(document, 'keydown', this.keyDownFn);
         HtmlRemote.addEvent(document, 'keyup', this.keyUpFn);
@@ -52,7 +63,7 @@ var PlayerView = (function()
     
     PlayerView.prototype.destroyPlayer = function(a)
     {
-        this.div.removeChild(this.playerRows[a]);
+        this.playerBody.removeChild(this.playerRows[a]);
         this.playerRows[a] = null;
     };
     
@@ -80,21 +91,19 @@ var PlayerView = (function()
         cell = document.createElement('td');
         posDiv = document.createElement('div');
         posDiv.className = 'hrBtn';
-//        posDiv.innerHTML = p.racePos;
         cell.appendChild(posDiv);
         playerRow.appendChild(cell);
         
         cell = document.createElement('td');
         nameDiv = document.createElement('div');
-        nameDiv.className = 'hrBtn';
-//        nameDiv.innerHTML = p.playerNameUcs2;
+        nameDiv.className = 'hrBtn hrClick';
+        HtmlRemote.addEvent(nameDiv, 'click', this.playerClickFn);
         cell.appendChild(nameDiv);
         playerRow.appendChild(cell);
         
         cell = document.createElement('td');
         carDiv = document.createElement('div');
         carDiv.className = 'hrBtn';
-//        carDiv.innerHTML = p.playerNameUcs2;
         cell.appendChild(carDiv);
         playerRow.appendChild(cell);
         
@@ -120,12 +129,10 @@ var PlayerView = (function()
             {
                 // Create player object
                 this.playerRows[a] = this.createPlayer(a);
-//                this.playerRows[a].drawn = true;
-//                this.div.appendChild(this.playerRows[a]);
             }
             else if (this.playerRows[a].drawn)
             {
-                this.div.removeChild(this.playerRows[a]);
+                this.playerBody.removeChild(this.playerRows[a]);
                 this.playerRows[a].drawn = false;
             }
             
@@ -153,7 +160,7 @@ var PlayerView = (function()
             playerRow = this.playerRows[this.playerIndices[a]];
             if (!playerRow.drawn)
             {
-                this.div.appendChild(playerRow);
+                this.playerBody.appendChild(playerRow);
                 playerRow.drawn = true;
             }
             
@@ -183,6 +190,15 @@ var PlayerView = (function()
         this.ctrlShift = (e.ctrlKey && e.shiftKey);
         if (a !== this.ctrlShift) {
             this.draw();
+        }
+    };
+    
+    PlayerView.prototype.handlePlayerClick = function(e)
+    {
+        t = HtmlRemote.getETarget(e);
+        
+        if (this.onPlayerClick) {
+            this.onPlayerClick(t.parentNode.parentNode.player.plId);
         }
     };
     

@@ -61,17 +61,26 @@
     right: 0;
 }
 
-.racerView
+.playerView
 {
     position: absolute;
-    top: 28px;
+    display: inline-block;
+    margin-top: 28px;
     right: 0;
-    margin:0px;
+    max-height: calc(100% - 28px);
+    overflow-y: auto;
+}
+.playerViewTable
+{
+    width: 100%;
+    height: 100%;
+    margin-right:0px;
+    margin-left:auto;
     padding:0px;
     border-collapse: collapse;
     border-spacing: 0;
 }
-.racerView td
+.playerViewTable td
 {
     margin: 0;
     padding: 0;

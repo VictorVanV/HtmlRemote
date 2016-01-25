@@ -8,14 +8,14 @@ var Viewer = (function()
         this.dim = [this.container.offsetWidth, this.container.offsetHeight];
         
         this.trackView = new TrackView(this.container);
-        //this.statusOverlay = new StatusOverlay(this.container);
-        this.messageOvl = new MessageOverlay(this.container);
-        
+
         this.hostView = null;
         this.onHostNameClick = null;
         
         this.playerView = new PlayerView(this.container);
         
+        this.messageOvl = new MessageOverlay(this.container);
+
         this.hostListOverlay = null;
         this.onHostSelect = null;
         
