@@ -258,6 +258,16 @@ var TrackView = (function()
         }
         else
         {
+            if (this.followPlayer && (Math.abs(p[0]) > 5 || Math.abs(p[1]) > 5))
+            {
+                this.followPlayer = null;
+                this.sPos[0] = e.clientX;
+                this.sPos[1] = e.clientY;
+                this.trackPosB[0] = this.trackPos[0];
+                this.trackPosB[1] = this.trackPos[1];
+                p[0] = 0;
+                p[1] = 0;
+            }
             this.trackPos[0] = this.trackPosB[0] + (p[0] * Math.cos(-this.trackRotation) - p[1] * Math.sin(-this.trackRotation));
             this.trackPos[1] = this.trackPosB[1] + (p[0] * Math.sin(-this.trackRotation) + p[1] * Math.cos(-this.trackRotation));
         }
