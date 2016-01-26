@@ -95,10 +95,14 @@ var HtmlRemote = (function()
                         console.log('Removed all players from race');
                         this.lfsHost.players.length = 0;
                         this.lfsHost.numPlayers = 0;
+                        this.viewer.trackView.removeFollowPlayer(0);
                         break;
                     
                     case IS.TINY_REN:
                         console.log('Race ending - returning to lobby');
+                        this.lfsHost.players.length = 0;
+                        this.lfsHost.numPlayers = 0;
+                        this.viewer.trackView.removeFollowPlayer(0);
                         this.viewer.hostView.setLobby();
                         break;
                 }
@@ -222,11 +226,13 @@ var HtmlRemote = (function()
             case IS.ISP_PLP:
                 this.lfsHost.playerPit(pkt);
                 this.viewer.playerView.draw();
+                this.viewer.trackView.removeFollowPlayer(pkt.plid);
                 break;
             
             case IS.ISP_PLL:
                 this.lfsHost.playerLeave(pkt);
                 this.viewer.playerView.draw();
+                this.viewer.trackView.removeFollowPlayer(pkt.plid);
                 break;
             
             case IS.ISP_TOC:
@@ -336,11 +342,14 @@ var HtmlRemote = (function()
         pkt.spec = '';
         this.wsInsim.send(pkt.pack());
         
+        // Selecting a new host, so let's reset some stuff
         if (this.lfsHost)
         {
             this.lfsHost.destroy();
             this.lfsHost = null;
         }
+        
+        this.viewer.trackView.removeFollowPlayer(0);
     };
     
     HtmlRemote.prototype.handleHostNameClick = function(e)

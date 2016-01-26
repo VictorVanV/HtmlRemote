@@ -220,6 +220,45 @@ var TrackView = (function()
         this.ctx.restore();
     };
     
+    TrackView.prototype.nextFollowPlayer = function()
+    {
+        // arf, have to do sorting ... let's just test this natural order for now.
+        
+        h = (this.followPlayer) ? 0 : 1;
+        if (this.players)
+        {
+            for (a = 0; a < this.players.length; a++)
+            {
+                ply = this.players[a];
+                if (!ply || ply.inPits) { continue; }
+                
+                if (h)
+                {
+                    this.followPlayer = ply;
+                    return;
+                }
+                else if (this.followPlayer.plId == ply.plId)
+                {
+                    h = 1;
+                }
+            }
+        }
+        
+        if (h < 2) {
+            this.followPlayer = null;
+        }
+    };
+    
+    TrackView.prototype.removeFollowPlayer = function(plId)
+    {
+        if (!this.followPlayer) { return; }
+        if (!plId ||
+            this.followPlayer.plId == plId)
+        {
+            this.followPlayer = null;
+        }
+    };
+    
     TrackView.prototype.setFollowTrackPos = function(time)
     {
         if (!this.followPlayer) { return; }
