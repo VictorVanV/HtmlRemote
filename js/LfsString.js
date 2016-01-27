@@ -474,8 +474,8 @@ LfsString.translateSpecials = function(str)
         str = str.split(i).join(LfsString._specials[i]);
     }
     
-    str = str.split("<").join("&lt;");
-    str = str.split(">").join("&gt;");
+//    str = str.split("<").join("&lt;");
+//    str = str.split(">").join("&gt;");
     
     return str;
 };

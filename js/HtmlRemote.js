@@ -93,17 +93,23 @@ var HtmlRemote = (function()
                 {
                     case IS.TINY_CLR:
                         console.log('Removed all players from race');
-                        this.lfsHost.players.length = 0;
+                        for (a = 0; a < this.lfsHost.players.length; a++) {
+                            this.lfsHost.players[a] = null;
+                        }
                         this.lfsHost.numPlayers = 0;
                         this.viewer.trackView.removeFollowPlayer(0);
+                        this.viewer.playerView.draw();
                         break;
                     
                     case IS.TINY_REN:
                         console.log('Race ending - returning to lobby');
-                        this.lfsHost.players.length = 0;
+                        for (a = 0; a < this.lfsHost.players.length; a++) {
+                            this.lfsHost.players[a] = null;
+                        }
                         this.lfsHost.numPlayers = 0;
                         this.viewer.trackView.removeFollowPlayer(0);
-                        this.viewer.hostView.setLobby();
+                        this.viewer.hostView.setLobby(true);
+                        this.viewer.playerView.draw();
                         break;
                 }
                 break;
@@ -182,16 +188,20 @@ var HtmlRemote = (function()
                     this.lfsHost.track = pkt.track;
                     
                     // Setup the viewer for a new track
-                    this.viewer.trackView.loadTrack(pkt.track.slice(0, 2));
-                    this.viewer.trackView.loadPath(pkt.track);
+                    this.viewer.setTrack(pkt.track);
                 }
-                
+
+                this.lfsHost.flags = pkt.flags;
                 this.lfsHost.raceInProg = pkt.raceinprog;
-                if (this.lfsHost.raceInProg) {
-                    this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
-                } else {
-                    this.viewer.hostView.setLobby();
+                if ((this.lfsHost.flags & IS.ISS_GAME) > 0)
+                {
+                    this.viewer.hostView.setLobby(false);
                 }
+                else
+                {
+                    this.viewer.hostView.setLobby(true);
+                }
+                this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
                 
                 this.viewer.playerView.draw();
                 
@@ -199,6 +209,15 @@ var HtmlRemote = (function()
             
             case IS.ISP_RST:
                 this.lfsHost.raceStart(pkt);
+                this.viewer.hostView.setTime(0);
+                if ((this.lfsHost.flags & IS.ISS_GAME) > 0)
+                {
+                    this.viewer.hostView.setLobby(false);
+                }
+                else
+                {
+                    this.viewer.hostView.setLobby(true);
+                }
                 this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
                 this.viewer.playerView.draw();
                 break;
@@ -241,12 +260,14 @@ var HtmlRemote = (function()
                 break;
             
             case IS.ISP_LAP:
+//                this.viewer.hostView.setLobby(false);
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerLap(pkt);
                 this.viewer.playerView.draw();
                 break;
             
             case IS.ISP_SPX:
+//                this.viewer.hostView.setLobby(false);
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerSplit(pkt);
                 this.viewer.playerView.draw();

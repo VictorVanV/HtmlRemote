@@ -6,6 +6,7 @@ var LfsHost = (function()
     
     function LfsHost()
     {
+        this.flags = 0;
         this.track = '';
         
         this.numConns = 0;
@@ -111,6 +112,7 @@ var LfsHost = (function()
         p.toPos[0] = 0;
         p.toPos[1] = 0;
         p.toPos[2] = 0;
+        p.racePos = 0;
         p.lap = 1;
         p.sector = 1;
         p.lapData.length = 0;
@@ -177,13 +179,14 @@ var LfsHost = (function()
                 p.toPos[2]      = this.mciBuf[c].info[a].z / 65536;
                 
                 p.node      = this.mciBuf[c].info[a].node;
+                if (!racePosChanged && p.lap != this.mciBuf[c].info[a].lap) { racePosChanged = true; }
                 p.lap       = this.mciBuf[c].info[a].lap;
                 if (!racePosChanged && p.racePos != this.mciBuf[c].info[a].position) { racePosChanged = true; }
                 p.racePos   = this.mciBuf[c].info[a].position;
                 p.info      = this.mciBuf[c].info[a].info;
                 p.speed     = this.mciBuf[c].info[a].speed / 327.68;
-    //            p.direction = this.mciBuf[c].info[a].direction / 180 * Math.DEGRAD - Math.PI;
-    //            p.angVel    = -this.mciBuf[c].info[a].angvel / 45 * Math.DEGRAD;
+//                p.direction = this.mciBuf[c].info[a].direction / 180 * Math.DEGRAD - Math.PI;
+//                p.angVel    = -this.mciBuf[c].info[a].angvel / 45 * Math.DEGRAD;
     
                 p.fromHeading   = p.toHeading;
                 p.toHeading     = this.mciBuf[c].info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;

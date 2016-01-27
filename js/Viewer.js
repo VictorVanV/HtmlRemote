@@ -12,9 +12,9 @@ var Viewer = (function()
         this.hostView = null;
         this.onHostNameClick = null;
         
-        this.playerView = new PlayerView(this.container);
-        
         this.messageOvl = new MessageOverlay(this.container);
+        
+        this.playerView = new PlayerView(this.container);
 
         this.hostListOverlay = null;
         this.onHostSelect = null;
@@ -84,8 +84,15 @@ var Viewer = (function()
             this.hostView = new HostView(this.container);
             this.hostView.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
         }
-        this.hostView.hostNameDiv.innerHTML = LfsString.toUCS2(LfsString.remColours(hostInfo.hname));
+        this.hostView.hostNameDiv.innerHTML = HtmlRemote.htmlspecialchars(LfsString.toUCS2(LfsString.remColours(hostInfo.hname)));
         this.hostView.trackNameDiv.innerHTML = hostInfo.track;
+    };
+    
+    Viewer.prototype.setTrack = function(trackName)
+    {
+        this.hostView.trackNameDiv.innerHTML = trackName;
+        this.trackView.loadTrack(trackName.slice(0, 2));
+        this.trackView.loadPath(trackName);
     };
     
     Viewer.prototype.startAnimation = function()

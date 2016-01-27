@@ -32,6 +32,8 @@ var HostView = (function()
         this.timeDiv.style.textAlign = 'center';
         this.div.appendChild(this.timeDiv);
         
+        this.lobby = false;
+        
         this.container.appendChild(this.div);
     }
     
@@ -48,9 +50,13 @@ var HostView = (function()
         }
     };
     
-    HostView.prototype.setLobby = function()
+    HostView.prototype.setLobby = function(toggle)
     {
-        this.modeDiv.innerHTML = 'Lobby';
+        if (toggle)
+        {
+            this.timeDiv.innerHTML = 'Lobby';
+        }
+        this.lobby = toggle;
     };
     
     HostView.prototype.setMode = function(pkt, raceInProg)
@@ -95,7 +101,9 @@ var HostView = (function()
     {
         this.timeStart = 0;
         this.raceTime = time;
-        this.timeDiv.innerHTML = HtmlRemote.ms2Msht(this.raceTime);
+        if (!this.lobby) {
+            this.timeDiv.innerHTML = HtmlRemote.ms2Msht(this.raceTime);
+        }
     };
     
     HostView.prototype.drawTime = function(time)
@@ -104,7 +112,9 @@ var HostView = (function()
         {
             this.timeStart = time;
         }
-        this.timeDiv.innerHTML = HtmlRemote.ms2Msht(this.raceTime + Math.floor(time - this.timeStart)).slice(0, -1);
+        if (!this.lobby) {
+            this.timeDiv.innerHTML = HtmlRemote.ms2Msht(this.raceTime + Math.floor(time - this.timeStart)).slice(0, -1);
+        }
     }
     
     return HostView;

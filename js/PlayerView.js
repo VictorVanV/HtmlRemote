@@ -3,17 +3,13 @@
 var PlayerView = (function()
 {
     var a, b, i, p, t,
-        cell, playerRow, posDiv, nameDiv, carDiv;
+        cell, playerRow, posDiv, nameDiv, carDiv, timeDiv, lapsDiv, penDiv;
     
     function PlayerView(container)
     {
         this.container = container;
         this.div = document.createElement('div');
         this.div.className = 'playerView';
-        
-//        this.playerDiv = document.createElement('div');
-//        this.playerDiv.className = 'playerViewDiv';
-//        this.div.appendChild(this.playerDiv);
         
         this.playerTable = document.createElement('table');
         this.playerTable.className = 'playerViewTable';
@@ -107,6 +103,28 @@ var PlayerView = (function()
         cell.appendChild(carDiv);
         playerRow.appendChild(cell);
         
+        cell = document.createElement('td');
+        timeDiv = document.createElement('div');
+        timeDiv.className = 'hrBtn';
+        timeDiv.innerHTML = 'time';
+        cell.appendChild(timeDiv);
+        playerRow.appendChild(cell);
+        
+        cell = document.createElement('td');
+        lapsDiv = document.createElement('div');
+        lapsDiv.className = 'hrBtn';
+        lapsDiv.innerHTML = 'lap';
+        cell.appendChild(lapsDiv);
+        playerRow.appendChild(cell);
+        
+        cell = document.createElement('td');
+        penDiv = document.createElement('div');
+        penDiv.className = 'hrBtn';
+        penDiv.innerHTML = 'pen';
+        penDiv.style.display = 'none';
+        cell.appendChild(penDiv);
+        playerRow.appendChild(cell);
+        
         return playerRow;
     };
     
@@ -167,11 +185,13 @@ var PlayerView = (function()
             p = this.players[this.playerIndices[a]];
             playerRow.children[0].firstChild.innerHTML = p.racePos;
             if (this.ctrlShift) {
-                playerRow.children[1].firstChild.innerHTML = p.userName;
+                playerRow.children[1].firstChild.innerHTML = HtmlRemote.htmlspecialchars(p.userName);
             } else {
-                playerRow.children[1].firstChild.innerHTML = p.playerNameUcs2;
+                playerRow.children[1].firstChild.innerHTML = HtmlRemote.htmlspecialchars(p.playerNameUcs2);
             }
             playerRow.children[2].firstChild.innerHTML = p.carName;
+            //playerRow.children[3].firstChild.innerHTML = HtmlRemote.ms2Msht(p......);
+            playerRow.children[4].firstChild.innerHTML = p.lap + '.' + p.sector;
         }
     }
     

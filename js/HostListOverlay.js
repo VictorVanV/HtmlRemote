@@ -71,7 +71,7 @@ var HostListOverlay = (function()
             entryDiv.appendChild(trackDiv);
             
             nameDiv = document.createElement('div');
-            nameDiv.innerHTML = LfsString.toUCS2(LfsString.remColours(hostListData.hosts[a].hname));
+            nameDiv.innerHTML = HtmlRemote.htmlspecialchars(LfsString.toUCS2(LfsString.remColours(hostListData.hosts[a].hname)));
             entryDiv.appendChild(nameDiv);
             HtmlRemote.addEvent(entryDiv, 'click', HtmlRemote.bind(this.handleHostSelect, this));
 
