@@ -145,8 +145,10 @@ var LfsHost = (function()
 
         if ((pkt.info[pkt.info.length - 1].info & IS.CCI_LAST) > 0)
         {
-            this.processMciFinalise();
+            return this.processMciFinalise();
         }
+        
+        return false;
     };
     
     LfsHost.prototype.processMciFinalise = function()
