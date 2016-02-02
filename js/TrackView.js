@@ -193,7 +193,7 @@ var TrackView = (function()
                 this.ctx.rotate(h);
                 this.ctx.translate(-pos[0], -pos[1]);
                 this.ctx.fillStyle = 'rgb(0, 0, 255)';
-                this.ctx.fillRect(pos[0] - 2, pos[1] - 2, 4, 4);
+                this.ctx.fillRect(pos[0] - 1.2, pos[1] - 2, 2.4, 4);
                 this.ctx.restore();
                 
                 t = '';
@@ -210,9 +210,10 @@ var TrackView = (function()
                 this.ctx.translate(pos[0], pos[1]);
                 this.ctx.rotate(-this.trackRotation);
                 this.ctx.translate(-pos[0], -pos[1]);
-                this.ctx.font = (14 / this.zoom) + 'px Arial';
+                this.ctx.scale(1 / this.zoom, 1 / this.zoom);
+                this.ctx.font = '14px Arial';
                 this.ctx.fillStyle = 'black';
-                this.ctx.fillText(t, pos[0], pos[1]);
+                this.ctx.fillText(t, pos[0] * this.zoom, pos[1] * this.zoom);
                 this.ctx.restore();
             }
         }

@@ -154,8 +154,8 @@ var LfsHost = (function()
     LfsHost.prototype.processMciFinalise = function()
     {
         racePosChanged = false;
-        //this.mciTime += (this.mciTime) ? 500 : new Date().getTime();
-        this.mciTime = new Date().getTime();
+        this.mciTime += (this.mciTime) ? 500 : new Date().getTime();
+        //this.mciTime = new Date().getTime();
         for (c = 0; c < this.mciBuf.length; c++)
         {
             for (a = 0; a < this.mciBuf[c].info.length; a++)
