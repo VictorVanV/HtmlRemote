@@ -1,7 +1,7 @@
-"use strict";
-
 var LfsPlayer = (function()
 {
+    "use strict";
+    
     var d, t, p = [0, 0, 0];
     
     function LfsPlayer()

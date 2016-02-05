@@ -1,7 +1,7 @@
-"use strict";
-
 var Viewer = (function()
 {
+    "use strict";
+    
     function Viewer(div)
     {
         this.container = div;
@@ -93,6 +93,15 @@ var Viewer = (function()
         this.hostView.trackNameDiv.innerHTML = trackName;
         this.trackView.loadTrack(trackName.slice(0, 2));
         this.trackView.loadPath(trackName);
+    };
+    
+    Viewer.prototype.setPathSplits = function(finish, split1, split2, split3)
+    {
+        this.trackView.path.finishLine = finish;
+        this.trackView.path.split1 = split1;
+        this.trackView.path.split2 = split2;
+        this.trackView.path.split3 = split3;
+        this.trackView.drawPath();
     };
     
     Viewer.prototype.startAnimation = function()

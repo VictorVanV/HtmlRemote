@@ -1,7 +1,7 @@
-"use strict";
-
 var HostListOverlay = (function()
 {
+    "use strict";
+    
     var a, t, entryDiv, nameDiv, trackDiv, connDiv, licDiv;
     
     function HostListOverlay(container)

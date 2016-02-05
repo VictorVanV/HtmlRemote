@@ -1,7 +1,7 @@
-"use strict";
-
 var LfsConnection = (function()
 {
+    "use strict";
+    
     function LfsConnection()
     {
         this.userName       = '';

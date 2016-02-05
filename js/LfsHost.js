@@ -1,7 +1,7 @@
-"use strict";
-
 var LfsHost = (function()
 {
+    "use strict";
+
     var a, c, p, t, id, racePosChanged;
     
     function LfsHost()
@@ -18,6 +18,7 @@ var LfsHost = (function()
         
         this.mciBuf = [];
         this.mciTime = 0;
+        this.numMci = 0;
     }
     
     LfsHost.prototype.destroy = function()
@@ -139,12 +140,21 @@ var LfsHost = (function()
         p.playerNameUcs2    = LfsString.toUCS2(LfsString.remColours(p.playerName));
     };
     
+    LfsHost.prototype.resetMciTime = function()
+    {
+        this.numMci = 0;
+        this.mciTime = 0;
+    };
+    
     LfsHost.prototype.processMci = function(pkt)
     {
         this.mciBuf.push(pkt);
 
         if ((pkt.info[pkt.info.length - 1].info & IS.CCI_LAST) > 0)
         {
+            if (++this.numMci == 100) {
+                this.resetMciTime();
+            }
             return this.processMciFinalise();
         }
         

@@ -1,7 +1,7 @@
-"use strict";
-
 var PlayerView = (function()
 {
+    "use strict";
+    
     var a, b, i, p, t,
         cell, playerRow, posDiv, nameDiv, carDiv, timeDiv, lapsDiv, penDiv;
     

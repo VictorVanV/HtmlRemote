@@ -10,7 +10,10 @@ var LfsPath = (function()
         this.version        = 0;
         this.revision       = 0;
         this.numNodes       = 0;
-        this.finishLine     = 0;
+        this.finishLine     = 0xFFFF;
+        this.split1         = 0xFFFF;
+        this.split2         = 0xFFFF;
+        this.split3         = 0xFFFF;
         this.nodes          = [];
         this.onLoad         = null;
     }
@@ -22,6 +25,10 @@ var LfsPath = (function()
         this.revision       = 0;
         this.numNodes       = 0;
         this.finishLine     = 0;
+        this.finishLine     = 0xFFFF;
+        this.split1         = 0xFFFF;
+        this.split2         = 0xFFFF;
+        this.split3         = 0xFFFF;
         this.nodes.length   = 0;
         this.onLoad         = null;
     };
@@ -92,6 +99,10 @@ var LfsPath = (function()
     
     LfsPath.prototype.generate = function(cv, zoom)
     {
+        if (!this.numNodes) { return; }
+        
+        this.clear(cv);
+        
         var llx, lly, lrx, lry,
             llx2, lly2, lrx2, lry2,
             dlx, dly, drx, dry,
@@ -153,12 +164,33 @@ var LfsPath = (function()
             ctx.closePath();
             ctx.fill();
             
+            if (a == this.finishLine)
+            {
+                this.drawLine(ctx, '#0000FF', dlx2, dly2, drx2, dry2);
+            }
+            else if (a == this.split1 ||
+                     a == this.split2 ||
+                     a == this.split3)
+            {
+                this.drawLine(ctx, '#00D000', dlx2, dly2, drx2, dry2);
+            }
+            
             dlx2 = dlx;
             dly2 = dly;
             drx2 = drx;
             dry2 = dry;
         }
+        
         ctx.restore();
+    };
+    
+    LfsPath.prototype.drawLine = function(ctx, col, lx, ly, rx, ry)
+    {
+        ctx.strokeStyle = col;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        ctx.lineTo(rx, ry);
+        ctx.stroke();
     };
     
     LfsPath.prototype.clear = function(cv)

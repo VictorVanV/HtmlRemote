@@ -1,7 +1,7 @@
-"use strict";
-
 var MessageOverlay = (function()
 {
+    "use strict";
+    
     var a, i, s, t, div;
     var MAX_NUM_MSGS = 15,
         MSG_TIMOUT = 4000;

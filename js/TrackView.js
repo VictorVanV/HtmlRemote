@@ -1,7 +1,7 @@
-"use strict";
-
 var TrackView = (function()
 {
+    "use strict";
+    
     var a, d, h, t, p = [0, 0], ply, pos;
     
     function TrackView(container)
@@ -114,6 +114,13 @@ var TrackView = (function()
     TrackView.prototype.onPathLoaded = function()
     {
         this.path.onLoad = null;
+        this.pathCv.width = 2560;
+        this.pathCv.height = 2560;
+        this.path.generate(this.pathCv, this.zoom);
+    };
+    
+    TrackView.prototype.drawPath = function()
+    {
         this.pathCv.width = 2560;
         this.pathCv.height = 2560;
         this.path.generate(this.pathCv, this.zoom);

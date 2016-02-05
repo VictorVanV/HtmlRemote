@@ -1,10 +1,10 @@
-"use strict";
-
 Math.PI2 = Math.PI * 2;
 Math.DEGRAD = Math.PI / 180;
 
 var HtmlRemote = (function()
 {
+    "use strict";
+    
     var MAX_RECON_COUNT = 10;
     
     var a, p, pkt, secs, mins, hours;
@@ -209,6 +209,7 @@ var HtmlRemote = (function()
             
             case IS.ISP_RST:
                 this.lfsHost.raceStart(pkt);
+                this.lfsHost.resetMciTime();
                 this.viewer.hostView.setTime(0);
                 if ((this.lfsHost.flags & IS.ISS_GAME) > 0)
                 {
@@ -219,6 +220,7 @@ var HtmlRemote = (function()
                     this.viewer.hostView.setLobby(true);
                 }
                 this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
+                this.viewer.setPathSplits(pkt.finish, pkt.split1, pkt.split2, pkt.split3);
                 this.viewer.playerView.draw();
                 break;
             

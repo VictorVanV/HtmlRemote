@@ -1,7 +1,7 @@
-"use strict";
-
 var HostView = (function()
 {
+    "use strict";
+    
     var a, b;
     
     function HostView(container)

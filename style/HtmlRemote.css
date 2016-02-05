@@ -57,16 +57,16 @@
 .hostView
 {
     position: absolute;
-    top: 1px;
-    right: 0;
+    top: 4px;
+    right: 2px;
 }
 
 .playerView
 {
     position: absolute;
     display: inline-block;
-    margin-top: 28px;
-    right: 0;
+    margin-top: 31px;
+    right: 2px;
     max-height: calc(100% - 28px);
     overflow-y: auto;
 }
