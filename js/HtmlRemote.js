@@ -1,25 +1,21 @@
-Math.PI2 = Math.PI * 2;
-Math.DEGRAD = Math.PI / 180;
-
 var HtmlRemote = (function()
 {
     "use strict";
     
-    var MAX_RECON_COUNT = 10;
-    
     var a, p, pkt, secs, mins, hours;
+    var MAX_RECON_COUNT = 10;
     
     function HtmlRemote(div)
     {
         // Check caps
-        if (!BrowserCaps.WEBSOCKET)
+        if (!('WebSocket' in window))
         {
             // We could redirect to the old flash version
             throw new Error('LFS Remote requires WebSockets, but your browser does not support them');
         }
         
         // Our InSim websocket
-        this.wsInsim = new WSInsim('isrelay.lfs.net', 47474);
+        this.wsInsim = new HtmlRemote.WSInsim('isrelay.lfs.net', 47474);
         this.wsInsim.onOpen = HtmlRemote.bind(this.onRelayConnected, this);
         this.wsInsim.onClose = HtmlRemote.bind(this.onRelayClosed, this);
         this.wsInsim.onError = HtmlRemote.bind(this.onRelayError, this);
@@ -31,7 +27,7 @@ var HtmlRemote = (function()
         this.syncing = false;
         
         // All visuals go in the Viewer
-        this.viewer = new Viewer(div);
+        this.viewer = new HtmlRemote.Viewer(div);
         this.viewer.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
         this.viewer.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
         this.viewer.playerView.onPlayerClick = HtmlRemote.bind(this.handlePlayerClick, this);
@@ -133,7 +129,7 @@ var HtmlRemote = (function()
                     this.hostListData.hosts.push(pkt.info[a]);
                     if ((pkt.info[a].flags & IS.HOS_LAST) > 0)
                     {
-                        this.hostListData.receiveStatus = HostListData.RECV_STATUS_RECEIVED;
+                        this.hostListData.receiveStatus = HtmlRemote.HostListData.RECV_STATUS_RECEIVED;
                         break;
                     }
                 }
@@ -157,7 +153,7 @@ var HtmlRemote = (function()
                 // Init a new lfsHost??
                 if (!this.lfsHost)
                 {
-                    this.lfsHost = new LfsHost();
+                    this.lfsHost = new HtmlRemote.LfsHost();
                     this.viewer.trackView.players = this.lfsHost.players;
                     this.viewer.playerView.setPlayers(this.lfsHost.players);
                 }
@@ -327,15 +323,15 @@ var HtmlRemote = (function()
     {
         if (!this.hostListData)
         {
-            this.hostListData = new HostListData();
+            this.hostListData = new HtmlRemote.HostListData();
         }
-        else if (this.hostListData.receiveStatus == HostListData.RECV_STATUS_RECEIVING)
+        else if (this.hostListData.receiveStatus == HtmlRemote.HostListData.RECV_STATUS_RECEIVING)
         {
             return;
         }
-        else if (this.hostListData.receiveStatus == HostListData.RECV_STATUS_RECEIVED)
+        else if (this.hostListData.receiveStatus == HtmlRemote.HostListData.RECV_STATUS_RECEIVED)
         {
-            if (this.hostListData.lastRequestTime > new Date().getTime() - HostListData.CACHETIME)
+            if (this.hostListData.lastRequestTime > new Date().getTime() - HtmlRemote.HostListData.CACHETIME)
             {
                 // Redraw the list of hosts
                 this.viewer.drawHostList(this.hostListData);
@@ -346,7 +342,7 @@ var HtmlRemote = (function()
         }
         
         this.hostListData.hosts.length = 0;
-        this.hostListData.receiveStatus = HostListData.RECV_STATUS_RECEIVING;
+        this.hostListData.receiveStatus = HtmlRemote.HostListData.RECV_STATUS_RECEIVING;
         this.hostListData.lastRequestTime = new Date().getTime();
         this.wsInsim.send(new IS.IR_HLR().pack());
 

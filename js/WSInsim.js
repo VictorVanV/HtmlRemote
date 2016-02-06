@@ -1,7 +1,7 @@
-"use strict";
-
-var WSInsim = (function()
+HtmlRemote.WSInsim = (function()
 {
+    "use strict";
+    
     var a, dv;
     
     function WSInsim(host, port)

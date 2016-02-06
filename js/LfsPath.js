@@ -1,4 +1,4 @@
-var LfsPath = (function()
+HtmlRemote.LfsPath = (function()
 {
     "use strict";
     
@@ -82,7 +82,7 @@ var LfsPath = (function()
         
         for (a = 0; a < this.numNodes; a++)
         {
-            n = new LfsPathNode();
+            n = new HtmlRemote.LfsPathNode();
             n.centreX       = dView.getInt32(offset, true) / 65536;     offset += 4;
             n.centreY       = -dView.getInt32(offset, true) / 65536;    offset += 4;
             n.centreZ       = dView.getInt32(offset, true) / 65536;     offset += 4;
@@ -202,7 +202,7 @@ var LfsPath = (function()
     return LfsPath;
 })();
 
-var LfsPathNode = (function()
+HtmlRemote.LfsPathNode = (function()
 {
     function LfsPathNode()
     {

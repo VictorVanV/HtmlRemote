@@ -1,4 +1,4 @@
-var HostListOverlay = (function()
+HtmlRemote.HostListOverlay = (function()
 {
     "use strict";
     

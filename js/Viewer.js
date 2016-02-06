@@ -1,4 +1,4 @@
-var Viewer = (function()
+HtmlRemote.Viewer = (function()
 {
     "use strict";
     
@@ -7,14 +7,14 @@ var Viewer = (function()
         this.container = div;
         this.dim = [this.container.offsetWidth, this.container.offsetHeight];
         
-        this.trackView = new TrackView(this.container);
+        this.trackView = new HtmlRemote.TrackView(this.container);
 
         this.hostView = null;
         this.onHostNameClick = null;
         
-        this.messageOvl = new MessageOverlay(this.container);
+        this.messageOvl = new HtmlRemote.MessageOverlay(this.container);
         
-        this.playerView = new PlayerView(this.container);
+        this.playerView = new HtmlRemote.PlayerView(this.container);
 
         this.hostListOverlay = null;
         this.onHostSelect = null;
@@ -56,7 +56,7 @@ var Viewer = (function()
     {
         if (!this.hostListOverlay)
         {
-            this.hostListOverlay = new HostListOverlay(this.container);
+            this.hostListOverlay = new HtmlRemote.HostListOverlay(this.container);
             this.hostListOverlay.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
         }
         this.hostListOverlay.update(hostListData);
@@ -81,7 +81,7 @@ var Viewer = (function()
         
         if (!this.hostView)
         {
-            this.hostView = new HostView(this.container);
+            this.hostView = new HtmlRemote.HostView(this.container);
             this.hostView.onHostNameClick = HtmlRemote.bind(this.handleHostNameClick, this);
         }
         this.hostView.hostNameDiv.innerHTML = HtmlRemote.htmlspecialchars(LfsString.toUCS2(LfsString.remColours(hostInfo.hname)));

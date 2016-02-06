@@ -1,4 +1,4 @@
-var PlayerView = (function()
+HtmlRemote.PlayerView = (function()
 {
     "use strict";
     

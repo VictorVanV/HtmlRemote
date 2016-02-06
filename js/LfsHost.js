@@ -1,9 +1,11 @@
-var LfsHost = (function()
+HtmlRemote.LfsHost = (function()
 {
     "use strict";
 
     var a, c, p, t, id, racePosChanged;
-    
+    var DEGRAD = Math.PI / 180,
+        PI2 = Math.PI * 2;
+
     function LfsHost()
     {
         this.flags = 0;
@@ -32,7 +34,7 @@ var LfsHost = (function()
     {
         if (!this.conns[pkt.ucid])
         {
-            c = new LfsConnection();
+            c = new HtmlRemote.LfsConnection();
             c.udId = pkt.ucid;
             this.conns[pkt.ucid] = c;
             this.numConns++;
@@ -81,7 +83,7 @@ var LfsHost = (function()
     {
         if (!this.players[pkt.plid])
         {
-            p = new LfsPlayer();
+            p = new HtmlRemote.LfsPlayer();
             p.plId = pkt.plid;
             this.players[pkt.plid] = p;
             this.numPlayers++;
@@ -207,22 +209,22 @@ var LfsHost = (function()
                 p.racePos   = this.mciBuf[0][c].info[a].position;
                 p.info      = this.mciBuf[0][c].info[a].info;
                 p.speed     = this.mciBuf[0][c].info[a].speed / 327.68;
-//                p.direction = this.mciBuf[0][c].info[a].direction / 180 * Math.DEGRAD - Math.PI;
-//                p.angVel    = -this.mciBuf[0][c].info[a].angvel / 45 * Math.DEGRAD;
+//                p.direction = this.mciBuf[0][c].info[a].direction / 180 * DEGRAD - Math.PI;
+//                p.angVel    = -this.mciBuf[0][c].info[a].angvel / 45 * DEGRAD;
     
                 p.fromHeading   = p.toHeading;
-                p.toHeading     = this.mciBuf[0][c].info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;
+                p.toHeading     = this.mciBuf[0][c].info[a].heading / 180 * DEGRAD - Math.PI + p.revs * PI2;
                 if (p.fromHeading)
                 {
                     if (p.fromHeading - p.toHeading > Math.PI)
                     {
                         p.revs++;
-                        p.toHeading += Math.PI2;
+                        p.toHeading += PI2;
                     }
                     else if (p.toHeading - p.fromHeading > Math.PI)
                     {
                         p.revs--;
-                        p.toHeading -= Math.PI2;
+                        p.toHeading -= PI2;
                     }
                 }
 //                if (p.fromHeading === 0) {
@@ -265,7 +267,7 @@ var LfsHost = (function()
         p = this.players[pkt.plid];
         if (!p.lapData.length)
         {
-            p.lapData.push(new LfsLapData());
+            p.lapData.push(new HtmlRemote.LfsLapData());
         }
         a = p.lapData[p.lapData.length - 1];
         a['split' + pkt.split] = pkt.stime;
@@ -277,7 +279,7 @@ var LfsHost = (function()
         p = this.players[pkt.plid];
         if (!p.lapData.length)
         {
-            p.lapData.push(new LfsLapData());
+            p.lapData.push(new HtmlRemote.LfsLapData());
         }
         a = p.lapData[p.lapData.length - 1];
         a.lap = pkt.ltime;
@@ -285,7 +287,7 @@ var LfsHost = (function()
         
         p.lap = pkt.lapsdone + 1;
         p.sector = 1;
-        p.lapData.push(new LfsLapData());
+        p.lapData.push(new HtmlRemote.LfsLapData());
     };
     
     return LfsHost;

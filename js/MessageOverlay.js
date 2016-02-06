@@ -1,4 +1,4 @@
-var MessageOverlay = (function()
+HtmlRemote.MessageOverlay = (function()
 {
     "use strict";
     

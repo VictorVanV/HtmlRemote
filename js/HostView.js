@@ -1,4 +1,4 @@
-var HostView = (function()
+HtmlRemote.HostView = (function()
 {
     "use strict";
     

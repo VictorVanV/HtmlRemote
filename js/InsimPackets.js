@@ -1,6 +1,6 @@
-"use strict";
-
 var IS = (function(){
+    "use strict";
+
     function IS()
     {
         

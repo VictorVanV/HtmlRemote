@@ -1,7 +1,7 @@
-"use strict";
-
-var HostListData = (function()
+HtmlRemote.HostListData = (function()
 {
+    "use strict";
+    
     function HostListData()
     {
         this.hosts = [];

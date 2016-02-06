@@ -1,4 +1,4 @@
-var LfsPlayer = (function()
+HtmlRemote.LfsPlayer = (function()
 {
     "use strict";
     
@@ -63,7 +63,7 @@ var LfsPlayer = (function()
     return LfsPlayer;
 })();
 
-var LfsLapData = (function()
+HtmlRemote.LfsLapData = (function()
 {
     function LfsLapData()
     {

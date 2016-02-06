@@ -1,4 +1,4 @@
-var LfsConnection = (function()
+HtmlRemote.LfsConnection = (function()
 {
     "use strict";
     

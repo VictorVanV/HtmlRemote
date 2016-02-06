@@ -1,4 +1,4 @@
-var TrackView = (function()
+HtmlRemote.TrackView = (function()
 {
     "use strict";
     
@@ -24,7 +24,7 @@ var TrackView = (function()
         this.trackPos = [this.div.width * 0.5 + 0.5, this.div.height * 0.5 + 0.5];
         this.trackPosB = [0, 0];
         this.trackRotation = 0;
-        this.path = new LfsPath();
+        this.path = new HtmlRemote.LfsPath();
         this.pathCv = document.createElement('canvas');
         this.showPath = true;
         this.players = null;
