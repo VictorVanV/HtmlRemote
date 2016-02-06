@@ -5,12 +5,12 @@
     padding: 1px 5px;
     border-width: 1px;
     border-style: solid;
-    border-color: rgba(192, 192, 192, 0);
+    border-color: rgba(208, 208, 224, 0);
     border-radius: 3px;
     -moz-background-clip: padding;
     -webkit-background-clip: padding;
     background-clip: padding-box; 
-    background-color: #c0c0c0;
+    background-color: #d0d0e0;
     color: black;
     font-size: 10pt;
     font-family: Arial, Tahoma, Verdana, sans-serif;
@@ -26,7 +26,7 @@
 }
 .hrBtn.dark
 {
-    background-color: #909090;
+    background-color: #a0a0b0;
 }
 
 .hrBtn.hrClick
@@ -35,11 +35,11 @@
 }
 .hrBtn.hrClick:hover
 {
-    border-color: rgba(160, 160, 160, 1);
-    background-color: #a0a0a0;
+    border-color: rgba(192, 192, 208, 1);
+    background-color: #c0c0d0;
 }
 
-.trackView, .statusOvl, .messagesOvl, .hostListOvl
+.trackView, .messagesOvl, .hostListOvl
 {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

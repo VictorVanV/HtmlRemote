@@ -64,6 +64,8 @@ var IS = (function(){
     IS.ISP_PLC = 53;
     IS.ISP_AXM = 54;
     IS.ISP_ACR = 55;
+    IS.ISP_HCP = 56;
+    IS.ISP_NCI = 57;
     
     // Added relay packets
     IS.IRP_ARQ = 250;   // Send : request if we are host admin (after connecting to a host)
@@ -97,6 +99,7 @@ var IS = (function(){
     IS.TINY_AXI = 20;
     IS.TINY_AXC = 21;
     IS.TINY_RIP = 22;
+    IS.TINY_NCI = 23;
     
     // Small packet types
     IS.SMALL_NONE = 0;
@@ -116,7 +119,7 @@ var IS = (function(){
         'IS_TOC', 'IS_FLG', 'IS_PFL', 'IS_FIN', 'IS_RES', 'IS_REO', 'IS_NLP', 'IS_MCI',
         'IS_MSX', 'IS_MSL', 'IS_CRS', 'IS_BFN', 'IS_AXI', 'IS_AXO', 'IS_BTN', 'IS_BTC',
         'IS_BTT', 'IS_RIP', 'IS_SSH', 'IS_CON', 'IS_OBH', 'IS_HLV', 'IS_PLC', 'IS_AXM',
-        'IS_ACR'
+        'IS_ACR', 'IS_HCP', 'IS_NCI'
     ];
     IS.ISP_XLATED[250] = 'IR_ARQ';
     IS.ISP_XLATED[251] = 'IR_ARP';
@@ -540,6 +543,41 @@ var IS = (function(){
         addPacketBase(this);
     };
     
+    IS.IS_CARHCP = function()
+    {
+        this._PACK = 'BB';
+        
+        this.h_mass = 0;
+        this.h_tres = 0;
+
+        addPacketBase(this);
+    };
+    
+    IS.IS_HCP = function()
+    {
+        this._PACK = 'BBBB';
+        
+        this.size = 68;
+        this.type = IS.ISP_HCP;
+        this.reqi = 0;
+        this.zero = 0;
+        
+        this.info = [];
+        
+        addPacketBase(this);
+        
+        this.unpackPost = function(dv)
+        {
+            var a, ofs = 4;
+            for (a = 0; a < 32; a++)
+            {
+                this.info.push(new IS.IS_CARHCP());
+                this.info[a].unpack(new DataView(dv.buffer.slice(ofs, ofs + 2)));
+                ofs += 2;
+            }       
+        };
+    };
+    
     IS.IS_RST = function()
     {
         this._PACK = 'BBBBBBBB6sBBHHHHHH';
@@ -584,6 +622,26 @@ var IS = (function(){
         this.total = 0;
         this.flags = 0;
         this.sp3 = 0;
+        
+        addPacketBase(this);
+    };
+    
+    IS.IS_NCI = function()
+    {
+        this._PACK = 'BBBBBBBBLL';
+        
+        this.size = 16;
+        this.type = IS.ISP_NCI;
+        this.reqi = 0;
+        this.ucid = 0;
+
+        this.language = 0;
+        this.sp1 = 0;
+        this.sp2 = 0;
+        this.sp3 = 0;
+        
+        this.userid = 0;
+        this.ipaddress = 0;
         
         addPacketBase(this);
     };

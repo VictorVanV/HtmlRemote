@@ -148,13 +148,23 @@ var LfsHost = (function()
     
     LfsHost.prototype.processMci = function(pkt)
     {
-        this.mciBuf.push(pkt);
+        a = this.mciBuf.length - 1;
+        if (a < 0)
+        {
+            this.mciBuf.push([]);
+            a = 0;
+        }
+        this.mciBuf[a].push(pkt);
 
         if ((pkt.info[pkt.info.length - 1].info & IS.CCI_LAST) > 0)
         {
             if (++this.numMci == 100) {
                 this.resetMciTime();
             }
+            //console.log(new Date().getTime() - this.mciTime);
+
+            this.mciBuf.push([]);
+
             return this.processMciFinalise();
         }
         
@@ -164,13 +174,13 @@ var LfsHost = (function()
     LfsHost.prototype.processMciFinalise = function()
     {
         racePosChanged = false;
-        this.mciTime += (this.mciTime) ? 500 : new Date().getTime();
-        //this.mciTime = new Date().getTime();
-        for (c = 0; c < this.mciBuf.length; c++)
+        //this.mciTime += (this.mciTime) ? 500 : new Date().getTime();
+        this.mciTime = new Date().getTime();
+        for (c = 0; c < this.mciBuf[0].length; c++)
         {
-            for (a = 0; a < this.mciBuf[c].info.length; a++)
+            for (a = 0; a < this.mciBuf[0][c].info.length; a++)
             {
-                p = this.players[this.mciBuf[c].info[a].plid];
+                p = this.players[this.mciBuf[0][c].info[a].plid];
                 if (!p || p.inPits) { continue; }
                 
                 if (this.mciTime - p.lastMciUpdate > 500)
@@ -186,22 +196,22 @@ var LfsHost = (function()
                 p.fromPos[0]    = p.toPos[0];
                 p.fromPos[1]    = p.toPos[1];
                 p.fromPos[2]    = p.toPos[2];
-                p.toPos[0]      = this.mciBuf[c].info[a].x / 65536;
-                p.toPos[1]      = this.mciBuf[c].info[a].y / -65536;
-                p.toPos[2]      = this.mciBuf[c].info[a].z / 65536;
+                p.toPos[0]      = this.mciBuf[0][c].info[a].x / 65536;
+                p.toPos[1]      = this.mciBuf[0][c].info[a].y / -65536;
+                p.toPos[2]      = this.mciBuf[0][c].info[a].z / 65536;
                 
-                p.node      = this.mciBuf[c].info[a].node;
-                if (!racePosChanged && p.lap != this.mciBuf[c].info[a].lap) { racePosChanged = true; }
-                p.lap       = this.mciBuf[c].info[a].lap;
-                if (!racePosChanged && p.racePos != this.mciBuf[c].info[a].position) { racePosChanged = true; }
-                p.racePos   = this.mciBuf[c].info[a].position;
-                p.info      = this.mciBuf[c].info[a].info;
-                p.speed     = this.mciBuf[c].info[a].speed / 327.68;
-//                p.direction = this.mciBuf[c].info[a].direction / 180 * Math.DEGRAD - Math.PI;
-//                p.angVel    = -this.mciBuf[c].info[a].angvel / 45 * Math.DEGRAD;
+                p.node      = this.mciBuf[0][c].info[a].node;
+                if (!racePosChanged && p.lap != this.mciBuf[0][c].info[a].lap) { racePosChanged = true; }
+                p.lap       = this.mciBuf[0][c].info[a].lap;
+                if (!racePosChanged && p.racePos != this.mciBuf[0][c].info[a].position) { racePosChanged = true; }
+                p.racePos   = this.mciBuf[0][c].info[a].position;
+                p.info      = this.mciBuf[0][c].info[a].info;
+                p.speed     = this.mciBuf[0][c].info[a].speed / 327.68;
+//                p.direction = this.mciBuf[0][c].info[a].direction / 180 * Math.DEGRAD - Math.PI;
+//                p.angVel    = -this.mciBuf[0][c].info[a].angvel / 45 * Math.DEGRAD;
     
                 p.fromHeading   = p.toHeading;
-                p.toHeading     = this.mciBuf[c].info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;
+                p.toHeading     = this.mciBuf[0][c].info[a].heading / 180 * Math.DEGRAD - Math.PI + p.revs * Math.PI2;
                 if (p.fromHeading)
                 {
                     if (p.fromHeading - p.toHeading > Math.PI)
@@ -223,7 +233,7 @@ var LfsHost = (function()
             }
         }
         
-        this.mciBuf.length = 0;
+        this.mciBuf.shift();
         
         return racePosChanged;
     };
