@@ -337,7 +337,6 @@ var HtmlRemote = (function()
                 // Redraw the list of hosts
                 this.viewer.drawHostList(this.hostListData);
                 
-                
                 return;
             }
         }
@@ -353,8 +352,6 @@ var HtmlRemote = (function()
     
     HtmlRemote.prototype.handleHostSelect = function(hostInfo)
     {
-        //console.log(hostInfo);
-        
         pkt = new IS.IR_SEL();
         pkt.reqi = 1;
         pkt.hname = hostInfo.hname;

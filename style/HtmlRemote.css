@@ -113,10 +113,15 @@
     background-color: rgba(0, 0, 0, 0.75);
 }
 
+.hostListOptions
+{
+    width: 500px;
+    margin: auto;
+}
 .hostListList
 {
     width: 500px;
     height: 100%;
-    margin: auto;
+    margin: 3px auto 0 auto;
     overflow-y: auto;
 }

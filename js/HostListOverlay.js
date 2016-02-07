@@ -14,29 +14,56 @@ HtmlRemote.HostListOverlay = (function()
         
         this.container.appendChild(this.div);
         
+        this.optionsDiv = document.createElement('div');
+        this.optionsDiv.className = 'hostListOptions';
+        this.div.appendChild(this.optionsDiv);
+        
+        a = document.createElement('div');
+        a.style.clear = 'both';
+        this.div.appendChild(a);
+        
+        this.drawOptions();
+        
         this.listDiv = document.createElement('div');
         this.listDiv.className = 'hostListList';
         this.div.appendChild(this.listDiv);
         
         this.onHostSelect = null;
+        this.onListClose = null;
         
         this.filterEmpty = true;
     }
     
     HostListOverlay.prototype.destroy = function()
     {
+        while (this.optionsDiv.children.length > 0)
+        {
+            HtmlRemote.removeEvent(this.optionsDiv.children[0], 'click', HtmlRemote.bind(this.handleClose, this));
+            this.optionsDiv.removeChild(this.optionsDiv.children[0]);
+        }
         while (this.listDiv.children.length > 0)
         {
+            HtmlRemote.removeEvent(this.listDiv.children[0], 'click', HtmlRemote.bind(this.handleHostSelect, this));
             this.listDiv.removeChild(this.listDiv.children[0]);
         }
         
         this.container.removeChild(this.div);
         this.div.removeChild(this.listDiv);
+        this.optionsDiv = null;
         this.listDiv = null;
         this.div = null;
         
         this.hostListData = null;
         this.onHostSelect = null;
+    };
+    
+    HostListOverlay.prototype.drawOptions = function()
+    {
+        a = document.createElement('div');
+        a.className = 'hrBtn hrClick inline';
+        a.innerHTML = 'Close';
+        HtmlRemote.addEvent(a, 'click', HtmlRemote.bind(this.handleClose, this));
+        this.optionsDiv.appendChild(a);
     };
     
     HostListOverlay.prototype.update = function(hostListData)
@@ -87,6 +114,14 @@ HtmlRemote.HostListOverlay = (function()
         {
             HtmlRemote.removeEvent(this.listDiv.children[0], 'click', HtmlRemote.bind(this.handleHostSelect, this));
             this.listDiv.removeChild(this.listDiv.children[0]);
+        }
+    };
+    
+    HostListOverlay.prototype.handleClose = function(e)
+    {
+        if (this.onListClose)
+        {
+            this.onListClose();
         }
     };
     

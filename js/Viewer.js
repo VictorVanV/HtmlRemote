@@ -58,6 +58,7 @@ HtmlRemote.Viewer = (function()
         {
             this.hostListOverlay = new HtmlRemote.HostListOverlay(this.container);
             this.hostListOverlay.onHostSelect = HtmlRemote.bind(this.handleHostSelect, this);
+            this.hostListOverlay.onListClose = HtmlRemote.bind(this.handleHostListClose, this);
         }
         this.hostListOverlay.update(hostListData);
     };
@@ -69,6 +70,11 @@ HtmlRemote.Viewer = (function()
             this.hostListOverlay.destroy();
             this.hostListOverlay = null;
         }
+    };
+    
+    Viewer.prototype.handleHostListClose = function()
+    {
+        this.removeHostList();
     };
     
     Viewer.prototype.handleHostSelect = function(hostInfo)
