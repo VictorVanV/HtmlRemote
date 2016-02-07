@@ -35,7 +35,7 @@ HtmlRemote.LfsHost = (function()
         if (!this.conns[pkt.ucid])
         {
             c = new HtmlRemote.LfsConnection();
-            c.udId = pkt.ucid;
+            c.ucId = pkt.ucid;
             this.conns[pkt.ucid] = c;
             this.numConns++;
         }
@@ -43,10 +43,11 @@ HtmlRemote.LfsHost = (function()
         {
             c = this.conns[pkt.ucid];
         }
-        c.userName      = pkt.uname;
-        c.playerName    = pkt.pname;
-        c.flags         = pkt.flags;
-        c.admin         = pkt.admin;
+        c.userName          = pkt.uname;
+        c.playerName        = pkt.pname;
+        c.playerNameUcs2    = LfsString.toUCS2(LfsString.remColours(pkt.pname));
+        c.flags             = pkt.flags;
+        c.admin             = pkt.admin;
     };
     
     LfsHost.prototype.connectionLeave = function(pkt)

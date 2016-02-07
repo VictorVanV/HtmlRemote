@@ -4,8 +4,10 @@ HtmlRemote.LfsConnection = (function()
     
     function LfsConnection()
     {
+        this.ucId           = 0;
         this.userName       = '';
         this.playerName     = '';
+        this.playerNameUcs2 = '';
         this.flags          = 0;
         this.admin          = 0;
     }

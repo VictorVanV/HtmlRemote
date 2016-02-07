@@ -155,6 +155,7 @@ var HtmlRemote = (function()
                 {
                     this.lfsHost = new HtmlRemote.LfsHost();
                     this.viewer.trackView.players = this.lfsHost.players;
+                    this.viewer.playerView.setConns(this.lfsHost.conns);
                     this.viewer.playerView.setPlayers(this.lfsHost.players);
                 }
                 
@@ -199,7 +200,7 @@ var HtmlRemote = (function()
                 }
                 this.viewer.hostView.setMode(pkt, this.lfsHost.raceInProg);
                 
-                this.viewer.playerView.draw();
+                //this.viewer.playerView.draw();
                 
                 break;
             
@@ -232,7 +233,7 @@ var HtmlRemote = (function()
             
             case IS.ISP_CPR:
                 this.lfsHost.playerRename(pkt);
-                this.viewer.playerView.draw();
+                this.viewer.playerView.update();
                 break;
             
             case IS.ISP_NPL:
@@ -254,21 +255,21 @@ var HtmlRemote = (function()
             
             case IS.ISP_TOC:
                 this.lfsHost.playerTakeOver(pkt);
-                this.viewer.playerView.draw();
+                this.viewer.playerView.update();
                 break;
             
             case IS.ISP_LAP:
 //                this.viewer.hostView.setLobby(false);
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerLap(pkt);
-                this.viewer.playerView.draw();
+                this.viewer.playerView.update();
                 break;
             
             case IS.ISP_SPX:
 //                this.viewer.hostView.setLobby(false);
                 this.viewer.hostView.setTime(pkt.etime);
                 this.lfsHost.playerSplit(pkt);
-                this.viewer.playerView.draw();
+                this.viewer.playerView.update();
                 break;
             
             case IS.ISP_MCI:

@@ -19,6 +19,8 @@
     -moz-transition : all 100ms linear;
     -o-transition : all 100ms linear;
     transition : all 100ms linear;
+    white-space: nowrap;
+    cursor: default;
 }
 .hrBtn.inline
 {
